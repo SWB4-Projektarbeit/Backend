@@ -1,19 +1,9 @@
 package de.hsesslingen.timesy.backend.model;
 
-import lombok.Data;
-
-@Data
-public class Appointment {
-    private final int uid;
-    private final String applicationTypeKey;
-    private final int courseGroupUid;
-    private final int courseUid;
-    private final String startAt;
-    private final String endAt;
-    private final String eventTypeKey;
-    private final int resourceUid;
-    private final int externalObjectUid;
-    private final int roomUid;
-    private final String resourceUrl;
-    private final String statusTypeKey;
+/**
+ * JSON DTO from HE Online API
+ */
+public record Appointment(int uid, String applicationTypeKey, int courseGroupUid, int courseUid, String startAt,
+                          String endAt, String eventTypeKey, int resourceUid, int externalObjectUid, int roomUid,
+                          String resourceUrl, String statusTypeKey) {
 }

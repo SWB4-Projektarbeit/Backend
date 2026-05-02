@@ -2,7 +2,9 @@ package de.hsesslingen.timesy.backend;
 
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
+import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import lombok.AllArgsConstructor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,14 +19,14 @@ class BackendApplicationTests {
 	void contextLoads(@Autowired HEOnlineService service) {
         List<Appointment> appointments = service.getAppointments();
         if (appointments == null) {
-            System.out.println("API returned non 200 status code");
-            return;
+            Assertions.fail("No appointments found");
         }
-        appointments.forEach(System.out::println);
 
         for (Appointment appointment : appointments) {
             Course course = service.getCourse(appointment);
-            System.out.println(appointment + " -> " + course);
+            Assertions.assertNotNull(course);
         }
+
+        service.getCourses();
 	}
 }
