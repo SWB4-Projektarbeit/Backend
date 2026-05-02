@@ -13,7 +13,7 @@ public class Config {
     @Bean
     public ThunderConfig loadConfig() {
         return ThunderFileManager.thunderConfig("Config", "config")
-                                 .fromResource("resources/config.tf")
+                                 .fromResource("config.tf")
                                  .reloadSetting(Reload.INTELLIGENT)
                                  .commentSetting(Comment.PRESERVE)
                                  .concurrentData(true)

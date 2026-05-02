@@ -1,0 +1,5 @@
+###
+GET localhost:5000/he/co/co-tm-core/course/api/appointments
+
+###
+GET localhost:5000/he/co/co-tm-core/course/api/courses/144707

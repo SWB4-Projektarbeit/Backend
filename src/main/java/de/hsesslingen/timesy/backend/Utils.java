@@ -22,8 +22,8 @@ public class Utils {
         try {
             //noinspection ResultOfMethodCallIgnored
             URI.create(url).toURL();
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException(key + " ist keine valide URL.");
+        } catch (MalformedURLException | IllegalArgumentException e) {
+            throw new IllegalArgumentException("In " + key + " (" + url + ") ist keine valide URL.");
         }
 
         return url;

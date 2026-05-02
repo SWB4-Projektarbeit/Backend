@@ -1,6 +1,7 @@
 package de.hsesslingen.timesy.backend;
 
 import de.hsesslingen.timesy.backend.model.Appointment;
+import de.hsesslingen.timesy.backend.model.Course;
 import de.zeanon.thunderfilemanager.internal.files.config.ThunderConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,8 @@ import java.util.List;
 public class HEOnlineService {
 
     public static final String HE_ONLINE_URL = "HE-Online URL";
-    public static final String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/appointments";
+    public static final String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/api/appointments";
+    public static final String COURSE_ENDPOINT = "he/co/co-tm-core/course/api/courses/{id}";
 
     private static final ParameterizedTypeReference<List<Appointment>> APPOINTMENT_TYPE = new ParameterizedTypeReference<>() {};
 
@@ -42,6 +44,22 @@ public class HEOnlineService {
                 .retrieve();
 
         ResponseEntity<@NotNull List<Appointment>> responseEntity = response.toEntity(APPOINTMENT_TYPE);
+
+        if (responseEntity.getStatusCode().value() == 200) {
+            return responseEntity.getBody();
+        } else {
+            return null;
+        }
+    }
+
+    public @Nullable Course getCourse(Appointment appointment) {
+        RestClient.ResponseSpec response = restClient.get()
+                .uri(COURSE_ENDPOINT, appointment.getCourseUid())
+                .accept(MediaType.APPLICATION_JSON)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .retrieve();
+
+        ResponseEntity<@NotNull Course> responseEntity = response.toEntity(Course.class);
 
         if (responseEntity.getStatusCode().value() == 200) {
             return responseEntity.getBody();

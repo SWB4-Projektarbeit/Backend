@@ -10,17 +10,17 @@ import java.util.Map;
 public class Course {
     private final long uid;
     private final boolean blocked;
-    private final String course_classification_key;
-    private final String course_code;
-    private final int course_identity_code_uid;
-    private final String course_type_key;
+    private final String courseClassificationKey;
+    private final String courseCode;
+    private final int courseIdentityCodeUid;
+    private final String courseTypeKey;
     private final float credits;
-    private final String formatted_course_code;
-    private final List<Locale> instruction_languages;
-    private final String main_language_of_instructions;
-    private final long organisation_uid;
-    private final Map<String, Map<Locale, String>> registration_config_type;
-    private final float semester_hours;
-    private final String semester_key;
+    private final String formattedCourseCode;
+    private final List<Locale> instructionLanguages;
+    private final String mainLanguageOfInstruction;
+    private final long organisationUid;
+    private final Map<String, Map<Locale, String>> registrationConfigType;
+    private final float semesterHours;
+    private final String semesterKey;
     private final Map<String, Map<Locale, String>> title;
 }
