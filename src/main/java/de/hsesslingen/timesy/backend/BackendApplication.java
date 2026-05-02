@@ -1,4 +1,4 @@
-package de.hsesslinge.timesy.backend;
+package de.hsesslingen.timesy.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

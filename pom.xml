@@ -11,15 +11,17 @@
 	<groupId>de.hsesslinge.timesy</groupId>
 	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
+    <name>TimeSy-Backend</name>
 	<description/>
 	<url/>
+
 	<licenses>
 		<license>
 			<name>GNU GENERAL PUBLIC LICENSE</name>
 			<url>https://github.com/SWB4-Projektarbeit/Backend/blob/main/LICENSE</url>
 		</license>
 	</licenses>
+
 	<developers>
 		<developer>
 			<id>VinzenzHassert</id>
@@ -31,6 +33,7 @@
 			</roles>
 			<timezone>Germany</timezone>
 		</developer>
+
 		<developer>
 			<id>NickHill</id>
 			<name>Nick Hill</name>
@@ -41,6 +44,7 @@
 			</roles>
 			<timezone>Germany</timezone>
 		</developer>
+
 		<developer>
 			<id>NiklasPlecevic</id>
 			<name>Niklas Plecevic</name>
@@ -51,6 +55,7 @@
 			</roles>
 			<timezone>Germany</timezone>
 		</developer>
+
 		<developer>
 			<id>SaschaMorbitzer</id>
 			<name>Sascha Morbitzer</name>
@@ -62,15 +67,22 @@
 			<timezone>Germany</timezone>
 		</developer>
 	</developers>
+
 	<scm>
 		<connection/>
 		<developerConnection/>
 		<tag/>
 		<url/>
 	</scm>
+
 	<properties>
 		<java.version>25</java.version>
+
+        <storagemanager.version>1.1.105</storagemanager.version>
+        <storagemanager.core.version>${storagemanager.version}</storagemanager.core.version>
+        <storagemanager.thunderfile.version>${storagemanager.version}</storagemanager.thunderfile.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -102,7 +114,8 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
+            <version>42.7.11</version>
+            <scope>runtime</scope>
 		</dependency>
 
 		<!-- JetBrains -->
@@ -120,9 +133,43 @@
 			<version>5.4.0</version>
 			<scope>test</scope>
 		</dependency>
+
+        <!-- StorageManager by Zeanon-->
+        <dependency>
+            <groupId>de.zeanon</groupId>
+            <artifactId>storagemanagercore</artifactId>
+            <version>${storagemanager.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- ThunderFileManager by Zeanon-->
+        <dependency>
+            <groupId>de.zeanon</groupId>
+            <artifactId>thunderfilemanager</artifactId>
+            <version>${storagemanager.thunderfile.version}</version>
+            <scope>compile</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
+        <defaultGoal>clean verify -U</defaultGoal>
+        <finalName>${project.name}</finalName>
+
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <targetPath>.</targetPath>
+                <directory>src/main/resources/config/</directory>
+            </resource>
+
+            <resource>
+                <directory>src/main/resources/dependencies</directory>
+                <excludes>
+                    <exclude>*.jar</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -142,7 +189,74 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+            <!-- Install Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <executions>
+                    <execution>
+                        <id>install-storagemanagercore</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <groupId>de.zeanon</groupId>
+                            <artifactId>storagemanagercore</artifactId>
+                            <version>${storagemanager.core.version}</version>
+                            <file>src/main/resources/dependencies/StorageManagerCore.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <id>install-thunderfilemanager</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <groupId>de.zeanon</groupId>
+                            <artifactId>thunderfilemanager</artifactId>
+                            <version>${storagemanager.thunderfile.version}</version>
+                            <file>src/main/resources/dependencies/ThunderFileManager.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Shade Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>de.zeanon.storagemanagercore</pattern>
+                            <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.zeanon.thunderfilemanager</pattern>
+                            <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
-
 </project>
