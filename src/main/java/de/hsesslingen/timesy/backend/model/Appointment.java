@@ -3,7 +3,7 @@ package de.hsesslingen.timesy.backend.model;
 import lombok.Data;
 
 @Data
-public class Room {
+public class Appointment {
     private final int uid;
     private final String application_type_key;
     private final int course_group_uid;
