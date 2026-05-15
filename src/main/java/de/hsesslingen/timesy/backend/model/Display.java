@@ -6,20 +6,31 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 public class Display {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long uid;
+
+    @Column
+    private long display_uid;
 
     @Column
     private String room_uid;
 
     @Column
     private String template_uid;
+
+    @Column
+    private String room_name;
+
+    @Column
+    private List<String> required_permissions;
 }
