@@ -13,7 +13,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RoomDTO {
     private String room_uid;
-    private String template_name;
     private String room_name;
+    private String template_name;
+    private List<ScheduleEntryDTO> schedule;
     private List<String> required_permissions;
 }
