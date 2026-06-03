@@ -20,17 +20,23 @@ public class Display {
     private long uid;
 
     @Column
-    private long display_uid;
+    private long displayUid;
 
     @Column
-    private String room_uid;
+    private int roomUid;
 
     @Column
-    private String template_uid;
+    private String templateUid;
 
     @Column
-    private String room_name;
+    private String roomName;
 
     @Column
-    private List<String> required_permissions;
+    private String buildingName;
+
+    @Column
+    private String floor;
+
+    @Column
+    private List<String> requiredPermissions;
 }

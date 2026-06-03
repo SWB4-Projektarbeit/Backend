@@ -12,9 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomDTO {
-    private String room_uid;
+    private int room_uid;
     private String room_name;
     private String template_name;
     private List<ScheduleEntryDTO> schedule;
+    private String floor;
     private List<String> required_permissions;
 }

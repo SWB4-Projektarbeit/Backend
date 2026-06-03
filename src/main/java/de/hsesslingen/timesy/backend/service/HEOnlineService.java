@@ -38,6 +38,18 @@ public class HEOnlineService {
         // TODO: Cookies for KeyCloak instance!
     }
 
+    public @Nullable Appointment getAppointment(int appointmentId) {
+        List<Appointment> appointments = getAppointments();
+        if (appointments == null) {
+            return null;
+        }
+        try {
+            return appointments.stream().filter(appointment -> appointment.uid() == appointmentId).findFirst().orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public @Nullable List<Appointment> getAppointments() {
         RestClient.ResponseSpec response = restClient.get()
                 .uri(APPOINTMENTS_ENDPOINT)

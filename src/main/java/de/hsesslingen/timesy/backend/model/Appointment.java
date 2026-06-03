@@ -5,5 +5,5 @@ package de.hsesslingen.timesy.backend.model;
  */
 public record Appointment(int uid, String applicationTypeKey, int courseGroupUid, int courseUid, String startAt,
                           String endAt, String eventTypeKey, int resourceUid, int externalObjectUid, int roomUid,
-                          String resourceUrl, String statusTypeKey) {
+                          String resourceUrl, String statusTypeKey, int successorUid) {
 }
