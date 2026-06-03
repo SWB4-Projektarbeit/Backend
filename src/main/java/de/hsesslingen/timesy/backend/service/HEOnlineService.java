@@ -3,10 +3,10 @@ package de.hsesslingen.timesy.backend.service;
 import de.hsesslingen.timesy.backend.Utils;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
-import de.zeanon.thunderfilemanager.internal.files.config.ThunderConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,6 @@ import java.util.List;
 @Slf4j
 public class HEOnlineService {
 
-    public static final String HE_ONLINE_URL = "HE-Online URL";
     public static final String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/api/appointments";
     public static final String COURSE_ENDPOINT = "he/co/co-tm-core/course/api/courses/{id}";
     public static final String COURSES_ENDPOINT = "he/co/co-tm-core/course/api/courses?limit=10000";
@@ -31,9 +30,13 @@ public class HEOnlineService {
 
     private final RestClient restClient;
 
-    public HEOnlineService(final @NotNull ThunderConfig thunderConfig) {
+    @Value("${heonline.url}")
+    private String heOnlineUrl;
+
+    public HEOnlineService() {
+        Utils.validateUrl(heOnlineUrl);
         restClient = RestClient.builder()
-                .baseUrl(Utils.getAndValidateUrl(thunderConfig, HE_ONLINE_URL))
+                .baseUrl(heOnlineUrl)
                 .build();
         // TODO: Cookies for KeyCloak instance!
     }

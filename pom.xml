@@ -78,9 +78,10 @@
 	<properties>
 		<java.version>25</java.version>
 
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <storagemanager.version>1.1.105</storagemanager.version>
         <storagemanager.core.version>${storagemanager.version}</storagemanager.core.version>
-        <storagemanager.thunderfile.version>${storagemanager.version}</storagemanager.thunderfile.version>
 	</properties>
 
 	<dependencies>
@@ -145,13 +146,11 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- ThunderFileManager by Zeanon-->
-        <dependency>
-            <groupId>de.zeanon</groupId>
-            <artifactId>thunderfilemanager</artifactId>
-            <version>${storagemanager.thunderfile.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.microsoft.playwright</groupId>
+			<artifactId>playwright</artifactId>
+			<version>1.59.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -182,6 +181,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.15.0	</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>
@@ -214,22 +214,6 @@
                             <goal>install-file</goal>
                         </goals>
                     </execution>
-
-                    <execution>
-                        <id>install-thunderfilemanager</id>
-                        <phase>clean</phase>
-                        <configuration>
-                            <groupId>de.zeanon</groupId>
-                            <artifactId>thunderfilemanager</artifactId>
-                            <version>${storagemanager.thunderfile.version}</version>
-                            <file>src/main/resources/dependencies/ThunderFileManager.jar</file>
-                            <packaging>jar</packaging>
-                            <generatePom>true</generatePom>
-                        </configuration>
-                        <goals>
-                            <goal>install-file</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
 
@@ -250,10 +234,6 @@
                     <relocations>
                         <relocation>
                             <pattern>de.zeanon.storagemanagercore</pattern>
-                            <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>de.zeanon.thunderfilemanager</pattern>
                             <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
                         </relocation>
                     </relocations>
