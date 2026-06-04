@@ -82,6 +82,7 @@
 
         <storagemanager.version>1.1.105</storagemanager.version>
         <storagemanager.core.version>${storagemanager.version}</storagemanager.core.version>
+        <storagemanager.json.version>${storagemanager.version}</storagemanager.json.version>
 	</properties>
 
 	<dependencies>
@@ -143,6 +144,13 @@
             <groupId>de.zeanon</groupId>
             <artifactId>storagemanagercore</artifactId>
             <version>${storagemanager.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>de.zeanon</groupId>
+            <artifactId>jsonfilemanager</artifactId>
+            <version>${storagemanager.json.version}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -214,6 +222,22 @@
                             <goal>install-file</goal>
                         </goals>
                     </execution>
+
+                    <execution>
+                        <id>install-jsonfilemanager</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <groupId>de.zeanon</groupId>
+                            <artifactId>jsonfilemanager</artifactId>
+                            <version>${storagemanager.json.version}</version>
+                            <file>src/main/resources/dependencies/JsonFileManager.jar</file>
+                            <packaging>jar</packaging>
+                            <generatePom>true</generatePom>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -234,6 +258,10 @@
                     <relocations>
                         <relocation>
                             <pattern>de.zeanon.storagemanagercore</pattern>
+                            <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.zeanon.jsonfilemanager</pattern>
                             <shadedPattern>de.hsesslingen.timesy.shaded.storagemanager</shadedPattern>
                         </relocation>
                     </relocations>

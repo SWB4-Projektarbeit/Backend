@@ -4,38 +4,40 @@ import de.hsesslingen.timesy.backend.dto.ScheduleEntryDTO;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Map;
 
 @Component
+@AllArgsConstructor
 public class ScheduleEntryMapper {
 
-    @Autowired
-    HEOnlineService heOnlineService;
+    private final HEOnlineService heOnlineService;
 
-    @Autowired
-    StatusMapper statusMapper;
+    private final StatusMapper statusMapper;
 
-    public ScheduleEntryDTO toScheduleEntryDTO(Appointment appointment) {
+    public ScheduleEntryDTO toScheduleEntryDTO(final Appointment appointment) {
         if (appointment == null) {
             return null;
         }
         return new ScheduleEntryDTO(
-                getAppName(appointment),
+                getAppointmentName(appointment),
                 appointment.startAt(),
                 appointment.endAt(),
                 statusMapper.toStatusDTO(appointment)
         );
     }
 
-    public ScheduleEntryDTO toScheduleEntryDTO(int appointmentId) {
+    public ScheduleEntryDTO toScheduleEntryDTO(final int appointmentId) {
         return toScheduleEntryDTO(heOnlineService.getAppointment(appointmentId));
     }
 
-    private String getAppName(Appointment appointment) {
+    private String getAppointmentName(final Appointment appointment) {
+        if (appointment == null) {
+            return null;
+        }
         Course course = heOnlineService.getCourse(appointment);
         if (course == null) {
             return null;

@@ -1,6 +1,6 @@
 package de.hsesslingen.timesy.backend.service;
 
-import de.hsesslingen.timesy.backend.Utils;
+import de.hsesslingen.timesy.backend.utils.Utils;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +30,7 @@ public class HEOnlineService {
 
     private final RestClient restClient;
 
-    @Value("${heonline.url}")
-    private String heOnlineUrl;
-
-    public HEOnlineService() {
+    public HEOnlineService(@Value("${heonline.url}") String heOnlineUrl) {
         Utils.validateUrl(heOnlineUrl);
         restClient = RestClient.builder()
                 .baseUrl(heOnlineUrl)

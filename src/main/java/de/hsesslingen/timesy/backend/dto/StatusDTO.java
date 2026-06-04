@@ -1,15 +1,14 @@
 package de.hsesslingen.timesy.backend.dto;
 
-import jakarta.persistence.Entity;
 import lombok.*;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
+@ToString
 public class StatusDTO {
-    private Status status;
+    private final Status status;
     private ScheduleEntryDTO successor = null;
 
     public enum Status {

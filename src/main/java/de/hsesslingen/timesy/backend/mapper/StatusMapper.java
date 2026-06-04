@@ -2,16 +2,16 @@ package de.hsesslingen.timesy.backend.mapper;
 
 import de.hsesslingen.timesy.backend.dto.StatusDTO;
 import de.hsesslingen.timesy.backend.model.Appointment;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class StatusMapper {
 
-    @Autowired
-    ScheduleEntryMapper scheduleEntryMapper;
+    private final ScheduleEntryMapper scheduleEntryMapper;
 
-    public StatusDTO toStatusDTO(Appointment appointment) {
+    public StatusDTO toStatusDTO(final Appointment appointment) {
         if (appointment == null) {
             return null;
         }

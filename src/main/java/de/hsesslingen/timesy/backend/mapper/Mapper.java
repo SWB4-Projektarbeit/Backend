@@ -7,91 +7,79 @@ import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.zeanon.storagemanagercore.internal.utility.basic.Pair;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Component
+@AllArgsConstructor
 public class Mapper {
 
-    @Autowired
-    RoomMapper roomMapper;
+    private final RoomMapper roomMapper;
 
-    @Autowired
-    ScheduleEntryMapper scheduleEntryMapper;
+    private final ScheduleEntryMapper scheduleEntryMapper;
 
-    @Autowired
-    DisplayRepository displayRepository;
+    private final DisplayRepository displayRepository;
 
-    @Autowired
-    HEOnlineService heOnlineService;
+    private final HEOnlineService heOnlineService;
 
-    public List<BuildingDTO> toBuildingDTOs(List<Appointment> appointments,
-                                            String building,
-                                            String floor,
-                                            Integer roomUid,
-                                            String roomName,
-                                            Integer courseUid,
-                                            String courseName) {
+    public List<BuildingDTO> toBuildingDTOs(final List<Appointment> appointments,
+                                            final String building,
+                                            final String floor,
+                                            final Integer roomUid,
+                                            final String roomName,
+                                            final Integer courseUid,
+                                            final String courseName) {
         if (appointments == null) {
             return null;
         }
 
-        Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
-        appointments.forEach(appointment -> {
-            if (appointment == null) {
-                return;
-            }
-
-            // if filtered, ignore
-            if (roomUid != null && appointment.roomUid() != roomUid) {
-                return;
-            }
-
-            Display display = displayRepository.findByRoomUid(appointment.roomUid());
-
-            if (floor != null && !display.getFloor().equals(floor)) {
-                return;
-            }
-
-            if (roomName != null && !display.getRoomName().equals(roomName)) {
-                return;
-            }
-
-            if (courseUid != null && appointment.courseUid() != courseUid) {
-                return;
-            }
-
-            if (courseName != null) {
+        Stream<Appointment> appointmentStream = appointments.stream();
+        if (roomUid != null) {
+            appointmentStream = appointmentStream.filter(appointment -> appointment.roomUid() == roomUid);
+        }
+        if (courseUid != null) {
+            appointmentStream = appointmentStream.filter(appointment -> appointment.courseUid() == courseUid);
+        }
+        if (courseName != null) {
+            appointmentStream = appointmentStream.filter(appointment -> {
                 Course course = heOnlineService.getCourse(appointment);
-                if (course != null) {
-                    Map<Locale,String> localizedTitles = course.title().get("value");
-                    if (localizedTitles != null && !localizedTitles.get(Locale.GERMANY).equals(courseName)) {
-                        return;
-                    }
-                }
-            }
+                if (course == null) return false;
+                Map<Locale, String> localizedTitles = course.title().get("value");
+                if (localizedTitles == null) return false;
+                return localizedTitles.get(Locale.GERMANY).equals(courseName);
+            });
+        }
 
-            String buildingName = display.getBuildingName();
-            if (building != null && !building.equals(buildingName)) {
-                return;
-            }
+        Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(appointment -> new Pair<>(appointment, displayRepository.findByRoomUid(appointment.roomUid())));
+        if (floor != null) {
+            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getFloor(), floor));
+        }
+        if (roomName != null) {
+            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getRoomName(), roomName));
+        }
+        if (building != null) {
+            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getBuildingName(), building));
+        }
 
-            if (!buildingDTOs.containsKey(buildingName)) {
-                buildingDTOs.put(buildingName, new HashMap<>());
-            }
-
-            Map<Integer, RoomDTO> roomDTOs = buildingDTOs.get(buildingName);
-            if (!roomDTOs.containsKey(appointment.roomUid())) {
-                roomDTOs.put(appointment.roomUid(), roomMapper.toRoomDTO(appointment, display));
-            }
-
-            roomDTOs.get(appointment.roomUid()).getSchedule().add(scheduleEntryMapper.toScheduleEntryDTO(appointment));
+        Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
+        dataStream.forEach(display -> {
+            buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> {
+                        return new HashMap<>();
+                    })
+                    .computeIfAbsent(display.getKey().roomUid(), __ -> {
+                        return roomMapper.toRoomDTO(display.getKey(), display.getValue());
+                    })
+                    .getSchedule()
+                    .add(scheduleEntryMapper.toScheduleEntryDTO(display.getKey()));
         });
 
-        return buildingDTOs.values().stream().map(
-                b -> new BuildingDTO(b.values().stream().toList())
-        ).toList();
+        return buildingDTOs.entrySet()
+                .stream()
+                .map(entry -> new BuildingDTO(entry.getKey(), new ArrayList<>(entry.getValue().values())))
+                .toList();
     }
 }

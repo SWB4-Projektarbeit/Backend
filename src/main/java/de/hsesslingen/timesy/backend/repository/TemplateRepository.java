@@ -1,11 +1,80 @@
 package de.hsesslingen.timesy.backend.repository;
 
+import de.zeanon.jsonfilemanager.JsonFileManager;
+import de.zeanon.jsonfilemanager.internal.files.raw.JsonFile;
+import de.zeanon.storagemanagercore.internal.utility.basic.BaseFileUtils;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class TemplateRepository {
-    public String getTemplateName(String templateUid) {
-        // TODO
-        return "";
+
+    private final String templatesFolder;
+
+    private final Map<String, Template> templates = new HashMap<>();
+
+    public TemplateRepository(@Value("${templates.folder}") String templatesFolder) {
+        this.templatesFolder = templatesFolder;
+        readTemplates();
+    }
+
+    public void readTemplates() {
+        try {
+            List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
+            for (File template : templateFolders) {
+                File[] templateFiles = template.listFiles();
+                if (templateFiles == null || templateFiles.length == 0) {
+                    //TODO log that the folder was empty
+                    continue;
+                }
+                File metaDataFile = Arrays.stream(templateFiles).filter(
+                        templateFile -> templateFile.getName().equals("metadata.json")
+                ).findFirst().orElse(null);
+                if (metaDataFile == null) {
+                    //TODO log that metadata could not be found
+                    continue;
+                }
+                JsonFile metaData = JsonFileManager.jsonFile(metaDataFile).create();
+                String templateUid = metaData.getString("template_uid");
+                this.templates.put(templateUid, new Template(
+                        templateUid,
+                        metaData.getString("template_name"),
+                        template.getAbsolutePath()
+                ));
+            }
+        } catch (IOException _) {
+
+        }
+    }
+
+    public Template getByName(String templateName) {
+        return templates.values()
+                .stream()
+                .filter(template -> template.getTemplateName().equals(templateName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Template getByUid(String templateUid) {
+        return templates.get(templateUid);
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class Template {
+        public String templateUid;
+        public String templateName;
+        public String templatePath;
     }
 }

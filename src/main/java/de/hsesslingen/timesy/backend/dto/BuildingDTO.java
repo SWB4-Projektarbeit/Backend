@@ -1,16 +1,17 @@
 package de.hsesslingen.timesy.backend.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class BuildingDTO {
+    private String buildingName;
     private List<RoomDTO> rooms;
 }

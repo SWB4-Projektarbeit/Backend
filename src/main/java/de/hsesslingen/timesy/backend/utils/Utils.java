@@ -1,4 +1,4 @@
-package de.hsesslingen.timesy.backend;
+package de.hsesslingen.timesy.backend.utils;
 
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.NotNull;
