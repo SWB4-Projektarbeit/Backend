@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Component
 @AllArgsConstructor
@@ -19,14 +20,15 @@ public class RoomMapper {
         if (appointment == null) {
             return null;
         }
-        return new RoomDTO(
+        Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
+        return templateData.map(template -> new RoomDTO(
                 appointment.roomUid(),
                 display.getRoomName(),
                 display.getTemplateUid(),
-                templateRepository.getByUid(display.getTemplateUid()).getTemplateName(),
+                template.getTemplateName(),
                 new ArrayList<>(),
                 display.getFloor(),
                 display.getRequiredPermissions()
-        );
+        )).orElse(null);
     }
 }

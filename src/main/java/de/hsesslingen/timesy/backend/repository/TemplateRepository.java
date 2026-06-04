@@ -7,14 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class TemplateRepository {
@@ -30,6 +28,7 @@ public class TemplateRepository {
 
     public void readTemplates() {
         try {
+            Set<String> toRemove = new HashSet<>(templates.keySet());
             List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
             for (File template : templateFolders) {
                 File[] templateFiles = template.listFiles();
@@ -51,22 +50,20 @@ public class TemplateRepository {
                         metaData.getString("template_name"),
                         template.getAbsolutePath()
                 ));
+                toRemove.remove(templateUid);
             }
+            toRemove.forEach(templates::remove);
         } catch (IOException _) {
 
         }
     }
 
-    public Template getByName(String templateName) {
-        return templates.values()
-                .stream()
-                .filter(template -> template.getTemplateName().equals(templateName))
-                .findFirst()
-                .orElse(null);
+    public Collection<Template> findAll() {
+        return this.templates.values();
     }
 
-    public Template getByUid(String templateUid) {
-        return templates.get(templateUid);
+    public Optional<Template> getByUid(String templateUid) {
+        return Optional.ofNullable(templates.get(templateUid));
     }
 
     @Getter

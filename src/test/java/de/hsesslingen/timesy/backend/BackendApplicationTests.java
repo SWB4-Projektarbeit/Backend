@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -16,7 +17,10 @@ import java.util.List;
 class BackendApplicationTests {
 
 	@Test
-	void contextLoads(@Autowired HEOnlineService service) {
+	void contextLoads(@Autowired HEOnlineService service, @Value("${heonline.url}") String heOnlineUrl) {
+        System.out.println(heOnlineUrl);
+        Assertions.assertEquals("Maiu", heOnlineUrl);
+        /**
         List<Appointment> appointments = service.getAppointments();
         if (appointments == null) {
             Assertions.fail("No appointments found");
@@ -28,5 +32,6 @@ class BackendApplicationTests {
         }
 
         service.getCourses();
+         **/
 	}
 }

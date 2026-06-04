@@ -59,7 +59,7 @@ public class DisplayService {
         this.sendImage(displayUid, path, 2);
     }
 
-    public void sendImage(final long displayUid, final String path, final int slot) {
+    public void sendImage(final long displayUid, String path, int slot) {
         if (slot < 2 || slot > 100) {
             //TODO log that slot has to be between 2 and 100
             return;

@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @EnableScheduling
 @AllArgsConstructor
@@ -29,7 +31,11 @@ public class UpdateService {
     @Scheduled(cron = "0 45 16 * * *")
     public void updateDisplays() {
         for (Display display : displayRepository.findAll()) {
-            displayService.sendImage(display.getDisplayUid(), templateRepository.getByUid(display.getTemplateUid()).getTemplatePath());
+            Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
+            if (templateData.isEmpty()) {
+                continue;
+            }
+            displayService.sendImage(display.getDisplayUid(), templateData.get().getTemplatePath());
         }
     }
 }
