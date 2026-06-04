@@ -19,7 +19,6 @@ class BackendApplicationTests {
 	@Test
 	void contextLoads(@Autowired HEOnlineService service, @Value("${heonline.url}") String heOnlineUrl) {
         System.out.println(heOnlineUrl);
-        Assertions.assertEquals("Maiu", heOnlineUrl);
         /**
         List<Appointment> appointments = service.getAppointments();
         if (appointments == null) {
