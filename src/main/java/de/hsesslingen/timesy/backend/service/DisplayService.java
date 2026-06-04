@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
@@ -29,12 +30,20 @@ public class DisplayService {
                 .build();
     }
 
-    public byte[] capturePng(String path) {
+    public byte[] capturePng(Path path) {
+        return capturePng(path, null);
+    }
+
+    public byte[] capturePng(Path path, Path imagePath) {
         try (Playwright playwright = Playwright.create();
-            Browser browser = playwright.chromium().launch()){
+             Browser browser = playwright.chromium().launch()){
             Page page = browser.newPage();
-            page.navigate(path);
-            return page.screenshot(new Page.ScreenshotOptions().setFullPage(true));
+            page.navigate(path.resolve("index.html").toAbsolutePath().normalize().toString().replace("\\", "/"));
+            Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
+            if (imagePath != null) {
+                screenshotOptions.setPath(imagePath);
+            }
+            return page.screenshot(screenshotOptions);
         }
     }
 
@@ -55,11 +64,11 @@ public class DisplayService {
         }
     }
 
-    public void sendImage(final long displayUid, final String path) {
+    public void sendImage(final long displayUid, final Path path) {
         this.sendImage(displayUid, path, 2);
     }
 
-    public void sendImage(final long displayUid, String path, int slot) {
+    public void sendImage(final long displayUid, Path path, int slot) {
         if (slot < 2 || slot > 100) {
             //TODO log that slot has to be between 2 and 100
             return;

@@ -14,11 +14,13 @@ public class Utils {
             throw new IllegalArgumentException("Die HeOnline URL darf nicht leer sein.");
         }
 
+        /**
         try {
             //noinspection ResultOfMethodCallIgnored
             URI.create(url).toURL();
         } catch (MalformedURLException | IllegalArgumentException e) {
             throw new IllegalArgumentException("'" + url + "' ist keine valide URL.");
         }
+         */
     }
 }

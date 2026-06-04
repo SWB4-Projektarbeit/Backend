@@ -1,6 +1,8 @@
 package de.hsesslingen.timesy.backend.service;
 
 import de.hsesslingen.timesy.backend.mapper.ScheduleEntryMapper;
+import de.hsesslingen.timesy.backend.model.Appointment;
+import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
@@ -9,6 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,6 +24,7 @@ public class UpdateService {
     private final DisplayService displayService;
     private final DisplayRepository displayRepository;
     private final TemplateRepository templateRepository;
+    private final HEOnlineService heOnlineService;
 
     @Scheduled(cron = "0 45 7 * * *")
     @Scheduled(cron = "0 15 9 * * *")

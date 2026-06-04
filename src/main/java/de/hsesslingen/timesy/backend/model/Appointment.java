@@ -3,7 +3,7 @@ package de.hsesslingen.timesy.backend.model;
 /**
  * JSON DTO from HE Online API
  */
-public record Appointment(int uid, String applicationTypeKey, int courseGroupUid, int courseUid, String startAt,
-                          String endAt, String eventTypeKey, int resourceUid, int externalObjectUid, int roomUid,
-                          String resourceUrl, String statusTypeKey, int successorUid) {
+public record Appointment(int uid, String applicationTypeKey, int courseGroupUid, int courseUid, String endAt,
+                          String eventTypeKey, int externalObjectUid, int resourceUid, String resourceUrl,
+                          int roomUid, String startAt, String statusTypeKey, Integer successorUid) {
 }

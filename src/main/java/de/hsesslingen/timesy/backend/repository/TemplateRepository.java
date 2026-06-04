@@ -6,12 +6,14 @@ import de.zeanon.storagemanagercore.internal.utility.basic.BaseFileUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 @Component
@@ -19,7 +21,7 @@ public class TemplateRepository {
 
     private final String templatesFolder;
 
-    private final Map<String, Template> templates = new HashMap<>();
+    private final Map<Integer, Template> templates = new HashMap<>();
 
     public TemplateRepository(@Value("${templates.folder}") String templatesFolder) {
         this.templatesFolder = templatesFolder;
@@ -28,7 +30,7 @@ public class TemplateRepository {
 
     public void readTemplates() {
         try {
-            Set<String> toRemove = new HashSet<>(templates.keySet());
+            Set<Integer> toRemove = new HashSet<>(templates.keySet());
             List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
             for (File template : templateFolders) {
                 File[] templateFiles = template.listFiles();
@@ -44,11 +46,11 @@ public class TemplateRepository {
                     continue;
                 }
                 JsonFile metaData = JsonFileManager.jsonFile(metaDataFile).create();
-                String templateUid = metaData.getString("template_uid");
+                Integer templateUid = metaData.getInt("template_uid");
                 this.templates.put(templateUid, new Template(
                         templateUid,
                         metaData.getString("template_name"),
-                        template.getAbsolutePath()
+                        template.toPath().toAbsolutePath().normalize()
                 ));
                 toRemove.remove(templateUid);
             }
@@ -62,16 +64,17 @@ public class TemplateRepository {
         return this.templates.values();
     }
 
-    public Optional<Template> getByUid(String templateUid) {
+    public Optional<Template> getByUid(int templateUid) {
         return Optional.ofNullable(templates.get(templateUid));
     }
 
     @Getter
     @Setter
+    @ToString
     @AllArgsConstructor
     public static class Template {
-        public String templateUid;
+        public int templateUid;
         public String templateName;
-        public String templatePath;
+        public Path templatePath;
     }
 }

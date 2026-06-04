@@ -72,7 +72,7 @@ public class Controller {
     }
 
     @PatchMapping("/rooms/{room_uid}")
-    public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int room_uid, @RequestBody final String templateUid) {
+    public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int room_uid, @RequestBody final int templateUid) {
         Optional<Display> displayData = displayRepository.findByRoomUid(room_uid);
         if (displayData.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

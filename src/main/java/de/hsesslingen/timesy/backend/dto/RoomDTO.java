@@ -14,7 +14,7 @@ import lombok.ToString;
 public class RoomDTO {
     private int room_uid;
     private String room_name;
-    private String template_uid;
+    private int template_uid;
     private String template_name;
     private List<ScheduleEntryDTO> schedule;
     private String floor;

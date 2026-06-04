@@ -24,7 +24,7 @@ public class Display {
     private int roomUid;
 
     @Column
-    private String templateUid;
+    private int templateUid;
 
     @Column
     private String roomName;

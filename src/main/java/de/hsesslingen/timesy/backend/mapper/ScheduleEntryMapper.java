@@ -26,7 +26,7 @@ public class ScheduleEntryMapper {
                 getAppointmentName(appointment),
                 appointment.startAt(),
                 appointment.endAt(),
-                statusMapper.toStatusDTO(appointment)
+                statusMapper.toStatusDTO(appointment, this)
         );
     }
 

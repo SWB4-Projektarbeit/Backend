@@ -29,11 +29,12 @@ public class HEOnlineService {
     private static final ParameterizedTypeReference<List<Course>> COURSE_TYPE = new ParameterizedTypeReference<>() {};
 
     private final RestClient restClient;
+    private final String heOnlineUrl;
 
     public HEOnlineService(@Value("${heonline.url}") String heOnlineUrl) {
         Utils.validateUrl(heOnlineUrl);
+        this.heOnlineUrl = heOnlineUrl;
         restClient = RestClient.builder()
-                .baseUrl(heOnlineUrl)
                 .build();
         // TODO: Cookies for KeyCloak instance!
     }
@@ -52,7 +53,7 @@ public class HEOnlineService {
 
     public @Nullable List<Appointment> getAppointments() {
         RestClient.ResponseSpec response = restClient.get()
-                .uri(APPOINTMENTS_ENDPOINT)
+                .uri("http://" + this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
                 .accept(MediaType.APPLICATION_JSON)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve();
@@ -61,6 +62,7 @@ public class HEOnlineService {
         try {
             responseEntity = response.toEntity(APPOINTMENT_TYPE);
         } catch (Exception e) {
+            System.err.println(e.getMessage());
             return null;
         }
 
@@ -77,7 +79,7 @@ public class HEOnlineService {
 
     public @Nullable Course getCourse(Appointment appointment) {
         RestClient.ResponseSpec response = restClient.get()
-                .uri(COURSE_ENDPOINT, appointment.courseUid())
+                .uri("http://" + this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
                 .accept(MediaType.APPLICATION_JSON)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve();
@@ -85,31 +87,6 @@ public class HEOnlineService {
         ResponseEntity<@NotNull Course> responseEntity;
         try {
             responseEntity = response.toEntity(Course.class);
-        } catch (Exception e) {
-            return null;
-        }
-
-        if (responseEntity.getStatusCode().value() != 200) {
-            return null;
-        }
-
-        try {
-            return responseEntity.getBody();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public @Nullable List<Course> getCourses() {
-        RestClient.ResponseSpec response = restClient.get()
-                .uri(COURSES_ENDPOINT)
-                .accept(MediaType.APPLICATION_JSON)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .retrieve();
-
-        ResponseEntity<@NotNull List<Course>> responseEntity;
-        try {
-            responseEntity = response.toEntity(COURSE_TYPE);
         } catch (Exception e) {
             return null;
         }
