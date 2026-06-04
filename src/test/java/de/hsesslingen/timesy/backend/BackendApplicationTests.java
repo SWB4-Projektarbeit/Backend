@@ -13,9 +13,7 @@ import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -30,16 +28,17 @@ import java.util.List;
 class BackendApplicationTests {
 
 	@Test
-	void contextLoads(@Autowired HEOnlineService heOnlineService, @Value("${heonline.url}") String heOnlineUrl) {
+	void contextLoads(@Autowired HEOnlineService heOnlineService) {
         List<Appointment> appointments = heOnlineService.getAppointments();
         if (appointments == null) {
             Assertions.fail("No appointments found");
         }
+        System.out.println("[Tests] HeOnline");
         for (Appointment appointment : appointments) {
-            System.out.println("HEOnline tests: " + appointment);
+            System.out.println("    - Appointment: " + appointment);
             Course course = heOnlineService.getCourse(appointment);
             Assertions.assertNotNull(course);
-            System.out.println("HEOnline tests: " + course);
+            System.out.println("        - Course: " + course);
         }
 	}
 
@@ -72,26 +71,29 @@ class BackendApplicationTests {
         if (templates.isEmpty()) {
             Assertions.fail("No templates found");
         }
+        System.out.println("[Tests] Templates");
         for (TemplateRepository.Template template : templates) {
-            System.out.println("Template tests: " + template);
-            System.out.println("Template tests: " + template.getTemplatePath());
+            System.out.println("    - Template: " + template);
+            System.out.println("        - Path: " + template.getTemplatePath());
             byte[] imageData = displayService.capturePng(template.getTemplatePath(), Paths.get("src/test/resources/testimages/test.png"));
-            System.out.println("Template tests: " + Arrays.toString(imageData));
+            System.out.println("        - Imagedata: " + Arrays.toString(imageData));
         }
     }
 
     @Test
     public void mappper(@Autowired DisplayRepository displayRepository, @Autowired Controller controller) {
         controller.createDummyData();
+        System.out.println("[Test] Mapper - Displays");
         for (Display display : displayRepository.findAll()) {
-            System.out.println("Mapper tests: " + display);
+            System.out.println("    - " + display);
         }
 
-        List<BuildingDTO> rooms = controller.getAllRooms2(null, null, null, null, null, null);
-        for (BuildingDTO room : rooms) {
-            System.out.println("Mapper tests: " + room);
+        List<BuildingDTO> buildings = controller.getAllRooms2(null, null, null, null, null, null);
+        System.out.println("[Test] Mapper - Buildings");
+        for (BuildingDTO room : buildings) {
+            System.out.println("    - " + room);
         }
 
-        Assertions.assertEquals(2, rooms.size());
+        Assertions.assertEquals(2, buildings.size());
     }
 }
