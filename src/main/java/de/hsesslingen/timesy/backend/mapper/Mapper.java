@@ -54,25 +54,41 @@ public class Mapper {
             });
         }
 
-        Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(appointment -> new Pair<>(appointment, displayRepository.findByRoomUid(appointment.roomUid())));
+        Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(
+                appointment -> displayRepository.findByRoomUid(appointment.roomUid()).map(
+                        display -> new Pair<>(appointment, display)).orElse(null));
         if (floor != null) {
-            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getFloor(), floor));
+            dataStream = dataStream.filter(display -> {
+                if (display == null || display.getValue() == null) {
+                    return false;
+                }
+                return Objects.equals(display.getValue().getFloor(), floor);
+            });
         }
         if (roomName != null) {
-            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getRoomName(), roomName));
+            dataStream = dataStream.filter(display -> {
+                if (display == null || display.getValue() == null) {
+                    return false;
+                }
+                return Objects.equals(display.getValue().getRoomName(), roomName);
+            });
         }
         if (building != null) {
-            dataStream = dataStream.filter(display -> Objects.equals(display.getValue().getBuildingName(), building));
+            dataStream = dataStream.filter(display -> {
+                if (display == null || display.getValue() == null) {
+                    return false;
+                }
+                return Objects.equals(display.getValue().getBuildingName(), building);
+            });
         }
 
         Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
         dataStream.forEach(display -> {
-            buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> {
-                        return new HashMap<>();
-                    })
-                    .computeIfAbsent(display.getKey().roomUid(), __ -> {
-                        return roomMapper.toRoomDTO(display.getKey(), display.getValue());
-                    })
+            if (display == null ||display.getKey() == null || display.getValue() == null) {
+                return;
+            }
+            buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> new HashMap<>())
+                    .computeIfAbsent(display.getKey().roomUid(), __ -> roomMapper.toRoomDTO(display.getKey(), display.getValue()))
                     .getSchedule()
                     .add(scheduleEntryMapper.toScheduleEntryDTO(display.getKey()));
         });

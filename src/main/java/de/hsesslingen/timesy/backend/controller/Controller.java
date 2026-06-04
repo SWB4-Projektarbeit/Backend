@@ -74,7 +74,7 @@ public class Controller {
     }
 
     @GetMapping("/update")
-    public ResponseEntity<@NotNull Display> updateRoom(final @RequestParam(required = true) Integer room_uid) {
+    public ResponseEntity<@NotNull Display> updateRoom(final @RequestParam Integer room_uid) {
         Optional<Display> displayData = displayRepository.findByRoomUid(room_uid);
         if (displayData.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
