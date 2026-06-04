@@ -15,7 +15,7 @@ public class StatusMapper {
         }
         return new StatusDTO(
                 StatusDTO.Status.valueOf(appointment.statusTypeKey()),
-                scheduleEntryMapper.toScheduleEntryDTO(appointment.successorUid())
+                appointment.successorUid() == null ? null : scheduleEntryMapper.toScheduleEntryDTO(appointment.successorUid())
         );
     }
 }

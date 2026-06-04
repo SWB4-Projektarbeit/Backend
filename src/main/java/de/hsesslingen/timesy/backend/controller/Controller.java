@@ -1,5 +1,6 @@
 package de.hsesslingen.timesy.backend.controller;
 
+import de.hsesslingen.timesy.backend.dto.BuildingDTO;
 import de.hsesslingen.timesy.backend.mapper.Mapper;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -60,6 +63,35 @@ public class Controller {
         }
     }
 
+    public List<BuildingDTO> getAllRooms2(final @RequestParam(required = false) String building,
+                                          final @RequestParam(required = false) String floor,
+                                          final @RequestParam(required = false) Integer room_uid,
+                                          final @RequestParam(required = false) String room_name,
+                                          final @RequestParam(required = false) Integer course_uid,
+                                          final @RequestParam(required = false) String course_name) {
+        if (room_uid != null && room_name != null) {
+            return null;
+        }
+
+        if (course_uid != null && course_name != null) {
+            return null;
+        }
+
+        try {
+            return mapper.toBuildingDTOs(
+                    heOnlineService.getAppointments(),
+                    building,
+                    floor,
+                    room_uid,
+                    room_name,
+                    course_uid,
+                    course_name
+            );
+        }  catch (Exception e) {
+            return null;
+        }
+    }
+
     @GetMapping("/templates")
     public ResponseEntity<?> getAllTemplates() {
         return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
@@ -73,7 +105,7 @@ public class Controller {
 
     @PatchMapping("/rooms/{room_uid}")
     public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int room_uid, @RequestBody final int templateUid) {
-        Optional<Display> displayData = displayRepository.findByRoomUid(room_uid);
+        List<Display> displayData = displayRepository.findByRoomUid(room_uid);
         if (displayData.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -83,7 +115,7 @@ public class Controller {
             return new ResponseEntity<>("No valid template found for the display at room'" + room_uid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        Display display = displayData.get();
+        Display display = displayData.getFirst();
         display.setTemplateUid(templateUid);
         return new ResponseEntity<>(displayRepository.save(display), HttpStatus.OK);
     }
@@ -95,12 +127,12 @@ public class Controller {
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        Optional<Display> displayData = displayRepository.findByRoomUid(room_uid);
+        List<Display> displayData = displayRepository.findByRoomUid(room_uid);
         if (displayData.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        Display display = displayData.get();
+        Display display = displayData.getFirst();
         Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
         if (templateData.isEmpty()) {
             return new ResponseEntity<>("No valid template found for the display at room'" + room_uid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -108,5 +140,34 @@ public class Controller {
 
         displayService.sendImage(display.getDisplayUid(), templateData.get().getTemplatePath());
         return new ResponseEntity<>(display, HttpStatus.OK);
+    }
+
+    @GetMapping("/dummydata")
+    public ResponseEntity<?> createDummyData() {
+        Display display1 = new Display(
+                null,
+                23,
+                6976,
+                123,
+                "Room1",
+                "Building1",
+                "Ground floor",
+                new ArrayList<>()
+        );
+        displayRepository.save(display1);
+
+        Display display2 = new Display(
+                null,
+                24,
+                6977,
+                124,
+                "Room2",
+                "Building2",
+                "First floor",
+                new ArrayList<>()
+        );
+        displayRepository.save(display2);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

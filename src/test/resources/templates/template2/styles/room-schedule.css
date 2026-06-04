@@ -1,0 +1,111 @@
+@font-face {
+  font-family: 'DIN Pro';
+  src: url('../font/DINPro-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DIN Pro';
+  src: url('../font/DINPro.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DIN Pro';
+  src: url('../font/DINPro-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'DIN Pro';
+  src: url('../font/DINPro-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { min-height:100%; }
+body {
+  background:#000; color:#fff;
+  font-family:'DIN Pro';
+  width:1200px; min-height:1600px; margin:0 auto;
+  display:flex; flex-direction:column; overflow:auto;
+}
+/* Header */
+.header {
+  padding: 56px 72px 56px;
+  display:flex; justify-content:space-between; align-items:flex-start;
+}
+.room-name    { font-size:3.6rem; font-weight:700; letter-spacing:-1px; line-height:1.02; }
+.room-name-en { font-size:1.15rem; font-weight:400; margin-top:8px; }
+.date         { font-size:2.2rem; font-weight:700; padding-top:8px; }
+
+.spacer { flex:1; max-height:80px; min-height:40px; }
+
+.schedule {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 1fr);
+  flex: 1; /* nimmt den restlichen Platz zwischen Header und Footer */
+}
+
+/* Slots */
+.slot {
+  display:grid; grid-template-columns:150px 1fr;
+  border-bottom:1px solid #fff;
+  min-height: 0;
+}
+.slot:last-child { border-bottom:none; }
+
+.slot.active               { background:#fff; color:#000; }
+.slot.active .time-divider { background:#000; }
+.slot.active .time-end     { color:#000; }
+.slot.active .slot-subtitle{ color:#000; }
+
+.slot.free .time-col,
+.slot.free .content-col   { }
+
+.slot.cancelled .slot-title { text-decoration:line-through; }
+
+.time-col {
+  display:flex; flex-direction:column; justify-content:center; align-items:flex-start;
+  padding:32px 28px 32px 72px; gap:12px;
+}
+.time-start { font-size:1.6rem; font-weight:700; }
+.time-end   { font-size:1.6rem; font-weight:700; }
+.time-divider { width:100%; height:2px; background:#fff; }
+
+.content-col {
+  padding:32px 48px 32px 40px;
+  display:flex; flex-direction:column; justify-content:center; gap:10px;
+}
+.slot-title    { font-size:1.7rem; font-weight:700; letter-spacing:-0.3px; line-height:1.2; }
+.slot-subtitle { font-size:1.1rem; font-weight:400; }
+
+.footer-spacer { flex:2; min-height:60px; }
+
+/* Footer */
+
+.footer {
+  padding:36px 80px 32px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.hs-logo img { height:140px; width:auto; display:block; }
+
+.footer-meta {
+  font-size:1.1rem; text-align:center; padding:14px 0 10px;
+}
+.status-msg { display:flex; align-items:center; justify-content:center; flex:1; font-size:1.4rem; padding:56px; }
+
+/* QR code / generated images enlargement */
+#qrcode img, #qrcode canvas, #qrcode table, #qrcode > div {
+  width:220px !important;
+  height:220px !important;
+  display:block;
+}

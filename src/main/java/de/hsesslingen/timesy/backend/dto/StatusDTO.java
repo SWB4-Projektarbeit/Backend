@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 public class StatusDTO {
     private final Status status;
-    private ScheduleEntryDTO successor = null;
+    private ScheduleEntryDTO successorUid = null;
 
     public enum Status {
         CONFIRMED,

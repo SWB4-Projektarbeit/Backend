@@ -30,7 +30,7 @@ public class ScheduleEntryMapper {
         );
     }
 
-    public ScheduleEntryDTO toScheduleEntryDTO(final int appointmentId) {
+    public ScheduleEntryDTO toScheduleEntryDTO(final Integer appointmentId) {
         return toScheduleEntryDTO(heOnlineService.getAppointment(appointmentId));
     }
 

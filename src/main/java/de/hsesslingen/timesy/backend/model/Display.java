@@ -8,14 +8,14 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Display {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private long uid;
+    private Long uid;
 
     @Column
     private long displayUid;

@@ -55,8 +55,14 @@ public class Mapper {
         }
 
         Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(
-                appointment -> displayRepository.findByRoomUid(appointment.roomUid()).map(
-                        display -> new Pair<>(appointment, display)).orElse(null));
+                appointment ->
+                {
+                    List<Display> displays = displayRepository.findByRoomUid(appointment.roomUid());
+                    if (displays.isEmpty()) {
+                        return null;
+                    }
+                    return new Pair<>(appointment, displays.getFirst());
+                });
         if (floor != null) {
             dataStream = dataStream.filter(display -> {
                 if (display == null || display.getValue() == null) {

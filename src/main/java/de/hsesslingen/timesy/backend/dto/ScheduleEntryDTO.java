@@ -7,8 +7,8 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @ToString
+@AllArgsConstructor
 public class ScheduleEntryDTO {
     private String name;
     private String startTime;

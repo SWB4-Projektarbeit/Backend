@@ -1,7 +1,11 @@
 package de.hsesslingen.timesy.backend;
 
+import de.hsesslingen.timesy.backend.controller.Controller;
+import de.hsesslingen.timesy.backend.dto.BuildingDTO;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
+import de.hsesslingen.timesy.backend.model.Display;
+import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import de.hsesslingen.timesy.backend.service.DisplayService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
@@ -11,14 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.ResponseEntity;
 
 import java.awt.*;
 import java.awt.image.*;
 import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
@@ -74,5 +78,20 @@ class BackendApplicationTests {
             byte[] imageData = displayService.capturePng(template.getTemplatePath(), Paths.get("src/test/resources/testimages/test.png"));
             System.out.println("Template tests: " + Arrays.toString(imageData));
         }
+    }
+
+    @Test
+    public void mappper(@Autowired DisplayRepository displayRepository, @Autowired Controller controller) {
+        controller.createDummyData();
+        for (Display display : displayRepository.findAll()) {
+            System.out.println("Mapper tests: " + display);
+        }
+
+        List<BuildingDTO> rooms = controller.getAllRooms2(null, null, null, null, null, null);
+        for (BuildingDTO room : rooms) {
+            System.out.println("Mapper tests: " + room);
+        }
+
+        Assertions.assertEquals(2, rooms.size());
     }
 }
