@@ -14,21 +14,21 @@ import java.util.Optional;
 @AllArgsConstructor
 public class RoomMapper {
 
-    private final TemplateRepository templateRepository;
+	private final TemplateRepository templateRepository;
 
-    public RoomDTO toRoomDTO(final Appointment appointment, final Display display) {
-        if (appointment == null) {
-            return null;
-        }
-        Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
-        return templateData.map(template -> new RoomDTO(
-                appointment.roomUid(),
-                display.getRoomName(),
-                display.getTemplateUid(),
-                template.getTemplateName(),
-                new ArrayList<>(),
-                display.getFloor(),
-                display.getRequiredPermissions()
-        )).orElse(null);
-    }
+	public RoomDTO toRoomDTO(final Appointment appointment, final Display display) {
+		if (appointment == null) {
+			return null;
+		}
+		Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
+		return templateData.map(template -> new RoomDTO(
+				appointment.roomUid(),
+				display.getRoomName(),
+				display.getTemplateUid(),
+				template.getTemplateName(),
+				new ArrayList<>(),
+				display.getFloor(),
+				display.getRequiredPermissions()
+		)).orElse(null);
+	}
 }

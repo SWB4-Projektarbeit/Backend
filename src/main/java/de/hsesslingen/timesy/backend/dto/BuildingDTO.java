@@ -12,6 +12,6 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 public class BuildingDTO {
-    private String buildingName;
-    private List<RoomDTO> rooms;
+	private String buildingName;
+	private List<RoomDTO> rooms;
 }

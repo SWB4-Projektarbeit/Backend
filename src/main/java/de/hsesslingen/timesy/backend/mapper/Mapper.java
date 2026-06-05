@@ -18,90 +18,90 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class Mapper {
 
-    private final RoomMapper roomMapper;
+	private final RoomMapper roomMapper;
 
-    private final ScheduleEntryMapper scheduleEntryMapper;
+	private final ScheduleEntryMapper scheduleEntryMapper;
 
-    private final DisplayRepository displayRepository;
+	private final DisplayRepository displayRepository;
 
-    private final HEOnlineService heOnlineService;
+	private final HEOnlineService heOnlineService;
 
-    public List<BuildingDTO> toBuildingDTOs(final List<Appointment> appointments,
-                                            final String building,
-                                            final String floor,
-                                            final Integer roomUid,
-                                            final String roomName,
-                                            final Integer courseUid,
-                                            final String courseName) {
-        if (appointments == null) {
-            return null;
-        }
+	public List<BuildingDTO> toBuildingDTOs(final List<Appointment> appointments,
+	                                        final String building,
+	                                        final String floor,
+	                                        final Integer roomUid,
+	                                        final String roomName,
+	                                        final Integer courseUid,
+	                                        final String courseName) {
+		if (appointments == null) {
+			return null;
+		}
 
-        Stream<Appointment> appointmentStream = appointments.stream();
-        if (roomUid != null) {
-            appointmentStream = appointmentStream.filter(appointment -> appointment.roomUid() == roomUid);
-        }
-        if (courseUid != null) {
-            appointmentStream = appointmentStream.filter(appointment -> appointment.courseUid() == courseUid);
-        }
-        if (courseName != null) {
-            appointmentStream = appointmentStream.filter(appointment -> {
-                Course course = heOnlineService.getCourse(appointment);
-                if (course == null) return false;
-                Map<Locale, String> localizedTitles = course.title().get("value");
-                if (localizedTitles == null) return false;
-                return localizedTitles.get(Locale.GERMANY).equals(courseName);
-            });
-        }
+		Stream<Appointment> appointmentStream = appointments.stream();
+		if (roomUid != null) {
+			appointmentStream = appointmentStream.filter(appointment -> appointment.roomUid() == roomUid);
+		}
+		if (courseUid != null) {
+			appointmentStream = appointmentStream.filter(appointment -> appointment.courseUid() == courseUid);
+		}
+		if (courseName != null) {
+			appointmentStream = appointmentStream.filter(appointment -> {
+				Course course = heOnlineService.getCourse(appointment);
+				if (course == null) return false;
+				Map<Locale, String> localizedTitles = course.title().get("value");
+				if (localizedTitles == null) return false;
+				return localizedTitles.get(Locale.GERMANY).equals(courseName);
+			});
+		}
 
-        Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(
-                appointment ->
-                {
-                    List<Display> displays = displayRepository.findByRoomUid(appointment.roomUid());
-                    if (displays.isEmpty()) {
-                        return null;
-                    }
-                    return new Pair<>(appointment, displays.getFirst());
-                });
-        if (floor != null) {
-            dataStream = dataStream.filter(display -> {
-                if (display == null || display.getValue() == null) {
-                    return false;
-                }
-                return Objects.equals(display.getValue().getFloor(), floor);
-            });
-        }
-        if (roomName != null) {
-            dataStream = dataStream.filter(display -> {
-                if (display == null || display.getValue() == null) {
-                    return false;
-                }
-                return Objects.equals(display.getValue().getRoomName(), roomName);
-            });
-        }
-        if (building != null) {
-            dataStream = dataStream.filter(display -> {
-                if (display == null || display.getValue() == null) {
-                    return false;
-                }
-                return Objects.equals(display.getValue().getBuildingName(), building);
-            });
-        }
+		Stream<Pair<Appointment, Display>> dataStream = appointmentStream.map(
+				appointment ->
+				{
+					List<Display> displays = displayRepository.findByRoomUid(appointment.roomUid());
+					if (displays.isEmpty()) {
+						return null;
+					}
+					return new Pair<>(appointment, displays.getFirst());
+				});
+		if (floor != null) {
+			dataStream = dataStream.filter(display -> {
+				if (display == null || display.getValue() == null) {
+					return false;
+				}
+				return Objects.equals(display.getValue().getFloor(), floor);
+			});
+		}
+		if (roomName != null) {
+			dataStream = dataStream.filter(display -> {
+				if (display == null || display.getValue() == null) {
+					return false;
+				}
+				return Objects.equals(display.getValue().getRoomName(), roomName);
+			});
+		}
+		if (building != null) {
+			dataStream = dataStream.filter(display -> {
+				if (display == null || display.getValue() == null) {
+					return false;
+				}
+				return Objects.equals(display.getValue().getBuildingName(), building);
+			});
+		}
 
-        Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
-        dataStream.forEach(display -> {
-            if (display == null || display.getKey() == null || display.getValue() == null) {
-                return;
-            }
-            buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> new HashMap<>())
-                    .computeIfAbsent(display.getKey().roomUid(), __ -> roomMapper.toRoomDTO(display.getKey(), display.getValue()))
-                    .getSchedule()
-                    .add(scheduleEntryMapper.toScheduleEntryDTO(display.getKey()));
-        });
+		Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
+		dataStream.forEach(display -> {
+			if (display == null || display.getKey() == null || display.getValue() == null) {
+				return;
+			}
+			buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> new HashMap<>())
+					.computeIfAbsent(display.getKey().roomUid(), __ -> roomMapper.toRoomDTO(display.getKey(), display.getValue()))
+					.getSchedule()
+					.add(scheduleEntryMapper.toScheduleEntryDTO(display.getKey()));
+		});
 
-        return buildingDTOs.entrySet()
-                .stream()
-                .map(entry -> new BuildingDTO(entry.getKey(), new ArrayList<>(entry.getValue().values())))
-                .toList();
-    }
+		return buildingDTOs.entrySet()
+				.stream()
+				.map(entry -> new BuildingDTO(entry.getKey(), new ArrayList<>(entry.getValue().values())))
+				.toList();
+	}
 }

@@ -10,8 +10,8 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class ScheduleEntryDTO {
-    private String name;
-    private String startTime;
-    private String endTime;
-    private StatusDTO status;
+	private String name;
+	private String startTime;
+	private String endTime;
+	private StatusDTO status;
 }

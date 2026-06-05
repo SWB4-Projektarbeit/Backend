@@ -13,28 +13,28 @@ import java.util.List;
 @AllArgsConstructor
 public class Display {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long uid;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	private Long uid;
 
-    @Column
-    private long displayUid;
+	@Column
+	private long displayUid;
 
-    @Column
-    private int roomUid;
+	@Column
+	private int roomUid;
 
-    @Column
-    private int templateUid;
+	@Column
+	private int templateUid;
 
-    @Column
-    private String roomName;
+	@Column
+	private String roomName;
 
-    @Column
-    private String buildingName;
+	@Column
+	private String buildingName;
 
-    @Column
-    private String floor;
+	@Column
+	private String floor;
 
-    @Column
-    private List<String> requiredPermissions;
+	@Column
+	private List<String> requiredPermissions;
 }

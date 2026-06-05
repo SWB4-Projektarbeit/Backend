@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface DisplayRepository extends JpaRepository<@NotNull Display, @NotNull Long> {
 
-    List<Display> findByRoomUid(final int roomUid);
+	List<Display> findByRoomUid(final int roomUid);
 }

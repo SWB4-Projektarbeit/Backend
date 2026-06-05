@@ -8,12 +8,12 @@ import lombok.*;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class StatusDTO {
-    private Status status;
-    private ScheduleEntryDTO successor = null;
+	private Status status;
+	private ScheduleEntryDTO successor = null;
 
-    public enum Status {
-        CONFIRMED,
-        RESCHEDULED,
-        CANCELLED,
-    }
+	public enum Status {
+		CONFIRMED,
+		RESCHEDULED,
+		CANCELLED,
+	}
 }

@@ -4,6 +4,15 @@ Set the templates folder in application.properties. <br>
 Initially run ```mvn clean verify -U``` to verify all dependencies get installed. <br>
 Then use ```mvn spring-boot:run``` to run the Backend.
 
+## Templates:
+Templates need to have an `index.html` and a `metadata.json` which needs to contain the following:
+```
+{
+  "template_uid": <uid>,
+  "template_name": <name>
+}
+```
+
 ## Endpoints:
 - main url: ```/api-timesy```
 - ```/rooms``` get a list of all available rooms sorted by buildings (get endpoint)
