@@ -23,18 +23,18 @@ public class DisplayService {
 
     private final RestClient restClient;
 
-    public DisplayService(@Value("${displayserver.url}") String displayServerUrl) {
+    public DisplayService(@Value("${displayserver.url}") final String displayServerUrl) {
         Utils.validateUrl(displayServerUrl);
         restClient = RestClient.builder()
                 .baseUrl(displayServerUrl)
                 .build();
     }
 
-    public byte[] capturePng(Path path) {
+    public byte[] capturePng(final Path path) {
         return capturePng(path, null);
     }
 
-    public byte[] capturePng(Path path, Path imagePath) {
+    public byte[] capturePng(final Path path, final Path imagePath) {
         try (Playwright playwright = Playwright.create();
              Browser browser = playwright.chromium().launch()){
             Page page = browser.newPage();
@@ -47,7 +47,7 @@ public class DisplayService {
         }
     }
 
-    public String getLocationDTO(long displayUid) {
+    public String getLocationDTO(final long displayUid) {
         RestClient.ResponseSpec response = this.restClient.get()
                 .uri(String.format(LOCATION_DTO_ENDPOINT, displayUid))
                 .accept(MediaType.APPLICATION_JSON)
@@ -68,7 +68,7 @@ public class DisplayService {
         this.sendImage(displayUid, path, 2);
     }
 
-    public void sendImage(final long displayUid, Path path, int slot) {
+    public void sendImage(final long displayUid, final Path path, int slot) {
         if (slot < 2 || slot > 100) {
             //TODO log that slot has to be between 2 and 100
             return;

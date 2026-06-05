@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class StatusMapper {
 
-    public StatusDTO toStatusDTO(final Appointment appointment, ScheduleEntryMapper scheduleEntryMapper) {
+    public StatusDTO toStatusDTO(final Appointment appointment, final ScheduleEntryMapper scheduleEntryMapper) {
         if (appointment == null) {
             return null;
         }

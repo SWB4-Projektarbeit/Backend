@@ -4,11 +4,11 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @RequiredArgsConstructor
-@ToString
 public class StatusDTO {
-    private final Status status;
+    private Status status;
     private ScheduleEntryDTO successor = null;
 
     public enum Status {

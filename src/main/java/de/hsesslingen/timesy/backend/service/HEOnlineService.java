@@ -31,7 +31,7 @@ public class HEOnlineService {
     private final RestClient restClient;
     private final String heOnlineUrl;
 
-    public HEOnlineService(@Value("${heonline.url}") String heOnlineUrl) {
+    public HEOnlineService(@Value("${heonline.url}") final String heOnlineUrl) {
         Utils.validateUrl(heOnlineUrl);
         this.heOnlineUrl = heOnlineUrl;
         restClient = RestClient.builder()
@@ -39,7 +39,7 @@ public class HEOnlineService {
         // TODO: Cookies for KeyCloak instance!
     }
 
-    public @Nullable Appointment getAppointment(int appointmentId) {
+    public @Nullable Appointment getAppointment(final int appointmentId) {
         List<Appointment> appointments = getAppointments();
         if (appointments == null) {
             return null;
@@ -77,7 +77,7 @@ public class HEOnlineService {
         }
     }
 
-    public @Nullable Course getCourse(Appointment appointment) {
+    public @Nullable Course getCourse(final Appointment appointment) {
         RestClient.ResponseSpec response = restClient.get()
                 .uri("http://" + this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
                 .accept(MediaType.APPLICATION_JSON)

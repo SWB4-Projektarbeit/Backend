@@ -31,12 +31,12 @@ public class Controller {
     private final TemplateRepository templateRepository;
 
     @GetMapping("/rooms")
-    public ResponseEntity<?> getAllRooms(final @RequestParam(required = false) String building,
-                                         final @RequestParam(required = false) String floor,
-                                         final @RequestParam(required = false) Integer roomUid,
-                                         final @RequestParam(required = false) String roomName,
-                                         final @RequestParam(required = false) Integer courseUid,
-                                         final @RequestParam(required = false) String courseName) {
+    public ResponseEntity<?> getAllRooms(@RequestParam(required = false) final String building,
+                                         @RequestParam(required = false) final String floor,
+                                         @RequestParam(required = false) final Integer roomUid,
+                                         @RequestParam(required = false) final String roomName,
+                                         @RequestParam(required = false) final Integer courseUid,
+                                         @RequestParam(required = false) final String courseName) {
         if (roomUid != null && roomName != null) {
             return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
         }
@@ -63,35 +63,6 @@ public class Controller {
         }
     }
 
-    public List<BuildingDTO> getAllRooms2(final @RequestParam(required = false) String building,
-                                          final @RequestParam(required = false) String floor,
-                                          final @RequestParam(required = false) Integer room_uid,
-                                          final @RequestParam(required = false) String room_name,
-                                          final @RequestParam(required = false) Integer course_uid,
-                                          final @RequestParam(required = false) String course_name) {
-        if (room_uid != null && room_name != null) {
-            return null;
-        }
-
-        if (course_uid != null && course_name != null) {
-            return null;
-        }
-
-        try {
-            return mapper.toBuildingDTOs(
-                    heOnlineService.getAppointments(),
-                    building,
-                    floor,
-                    room_uid,
-                    room_name,
-                    course_uid,
-                    course_name
-            );
-        }  catch (Exception e) {
-            return null;
-        }
-    }
-
     @GetMapping("/templates")
     public ResponseEntity<?> getAllTemplates() {
         return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
@@ -104,15 +75,15 @@ public class Controller {
     }
 
     @PatchMapping("/rooms/{room_uid}")
-    public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int room_uid, @RequestBody final int templateUid) {
-        List<Display> displayData = displayRepository.findByRoomUid(room_uid);
+    public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int roomUid, @RequestBody final int templateUid) {
+        List<Display> displayData = displayRepository.findByRoomUid(roomUid);
         if (displayData.isEmpty()) {
-            return new ResponseEntity<>("No display found for '" + room_uid + "'", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No display found for '" + roomUid + "'", HttpStatus.NOT_FOUND);
         }
 
         Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(templateUid);
         if (templateData.isEmpty()) {
-            return new ResponseEntity<>("No valid template found for the display at room'" + room_uid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         Display display = displayData.getFirst();
@@ -121,13 +92,13 @@ public class Controller {
     }
 
     @GetMapping("/display/update")
-    public ResponseEntity<?> updateDisplay(final @RequestParam(required = false) Integer room_uid) {
-        if (room_uid == null) {
+    public ResponseEntity<?> updateDisplay(@RequestParam(required = false) final Integer roomUid) {
+        if (roomUid == null) {
             updateService.updateDisplays();
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        List<Display> displayData = displayRepository.findByRoomUid(room_uid);
+        List<Display> displayData = displayRepository.findByRoomUid(roomUid);
         if (displayData.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -135,7 +106,7 @@ public class Controller {
         Display display = displayData.getFirst();
         Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
         if (templateData.isEmpty()) {
-            return new ResponseEntity<>("No valid template found for the display at room'" + room_uid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         displayService.sendImage(display.getDisplayUid(), templateData.get().getTemplatePath());

@@ -23,7 +23,7 @@ public class TemplateRepository {
 
     private final Map<Integer, Template> templates = new HashMap<>();
 
-    public TemplateRepository(@Value("${templates.folder}") String templatesFolder) {
+    public TemplateRepository(@Value("${templates.folder}") final String templatesFolder) {
         this.templatesFolder = templatesFolder;
         readTemplates();
     }
@@ -64,7 +64,7 @@ public class TemplateRepository {
         return this.templates.values();
     }
 
-    public Optional<Template> getByUid(int templateUid) {
+    public Optional<Template> getByUid(final int templateUid) {
         return Optional.ofNullable(templates.get(templateUid));
     }
 

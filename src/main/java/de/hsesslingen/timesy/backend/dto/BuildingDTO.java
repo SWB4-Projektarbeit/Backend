@@ -9,8 +9,8 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @ToString
+@AllArgsConstructor
 public class BuildingDTO {
     private String buildingName;
     private List<RoomDTO> rooms;

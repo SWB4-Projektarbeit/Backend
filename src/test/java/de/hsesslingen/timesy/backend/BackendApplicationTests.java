@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -30,7 +32,7 @@ import java.util.List;
 class BackendApplicationTests {
 
     @BeforeAll
-    static void checkProperties(@Value("${heonline.url}") String heOnlineUrl, @Value("${templates.folder}") String templatesFolder) {
+    static void checkProperties(@Value("${heonline.url}") final String heOnlineUrl, @Value("${templates.folder}") final String templatesFolder) {
         System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
         Assertions.assertNotEquals("", heOnlineUrl);
         System.out.println("[Tests] Templates folder: '" + templatesFolder + "'");
@@ -38,7 +40,7 @@ class BackendApplicationTests {
     }
 
     @BeforeAll
-    static void initDB(@Autowired Controller controller) {
+    static void initDB(@Autowired final Controller controller) {
         controller.createDummyData();
     }
 
@@ -68,7 +70,7 @@ class BackendApplicationTests {
     }
 
 	@Test
-	void contextLoads(@Autowired HEOnlineService heOnlineService) {
+	void contextLoads(@Autowired final HEOnlineService heOnlineService) {
         List<Appointment> appointments = heOnlineService.getAppointments();
         if (appointments == null) {
             Assertions.fail("No appointments found");
@@ -83,7 +85,7 @@ class BackendApplicationTests {
 	}
 
     @Test
-    void templateLoads(@Autowired TemplateRepository repository, @Autowired DisplayService displayService) {
+    void templateLoads(@Autowired final TemplateRepository repository, @Autowired final DisplayService displayService) {
         repository.readTemplates();
         Collection<TemplateRepository.Template> templates = repository.findAll();
         if (templates.isEmpty()) {
@@ -99,26 +101,34 @@ class BackendApplicationTests {
     }
 
     @Test
-    public void mappper(@Autowired DisplayRepository displayRepository, @Autowired Controller controller) {
+    public void mappper(@Autowired final DisplayRepository displayRepository, @Autowired final Controller controller) {
         System.out.println("[Test] Mapper - Displays");
         for (Display display : displayRepository.findAll()) {
             System.out.println("    - " + display);
         }
 
-        List<BuildingDTO> buildings = controller.getAllRooms2(null, null, null, null, null, null);
+        ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, null, null, null, null);
+        Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
+        Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
+        //noinspection unchecked
+        List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
         System.out.println("[Test] Mapper - Buildings");
-        for (BuildingDTO room : buildings) {
-            System.out.println("    - " + room);
+        for (BuildingDTO building : buildings) {
+            System.out.println("    - " + building);
         }
 
         Assertions.assertEquals(2, buildings.size());
     }
 
     @Test
-    public void updateTemplate(@Autowired Controller controller, @Autowired TemplateRepository templateRepository) {
+    public void updateTemplate(@Autowired final Controller controller, @Autowired final TemplateRepository templateRepository) {
         templateRepository.readTemplates();
         controller.updateRoom(6976, 124);
-        List<BuildingDTO> buildings = controller.getAllRooms2(null, null, 6976, null, null, null);
+        ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, 6976, null, null, null);
+        Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
+        Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
+        //noinspection unchecked
+        List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
         Assertions.assertEquals(1, buildings.size());
         Assertions.assertEquals(1, buildings.getFirst().getRooms().size());
         Assertions.assertEquals(124, buildings.getFirst().getRooms().getFirst().getTemplateUid());
