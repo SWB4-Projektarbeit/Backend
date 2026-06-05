@@ -101,4 +101,29 @@ public class HEOnlineService {
             return null;
         }
     }
+
+    public @Nullable List<Course> getCourses() {
+        RestClient.ResponseSpec response = restClient.get()
+                .uri("http://" + this.heOnlineUrl + "/" + COURSES_ENDPOINT)
+                .accept(MediaType.APPLICATION_JSON)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .retrieve();
+
+        ResponseEntity<@NotNull List<Course>> responseEntity;
+        try {
+            responseEntity = response.toEntity(COURSE_TYPE);
+        } catch (Exception e) {
+            return null;
+        }
+
+        if (responseEntity.getStatusCode().value() != 200) {
+            return null;
+        }
+
+        try {
+            return responseEntity.getBody();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
