@@ -55,7 +55,7 @@ public class HEOnlineService {
 
 	public @Nullable List<Appointment> getAppointments() {
 		RestClient.ResponseSpec response = restClient.get()
-				.uri("http://" + this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
+				.uri(this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -81,7 +81,7 @@ public class HEOnlineService {
 
 	public @Nullable Course getCourse(final Appointment appointment) {
 		RestClient.ResponseSpec response = restClient.get()
-				.uri("http://" + this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
+				.uri(this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -106,7 +106,7 @@ public class HEOnlineService {
 
 	public @Nullable List<Course> getCourses() {
 		RestClient.ResponseSpec response = restClient.get()
-				.uri("http://" + this.heOnlineUrl + "/" + COURSES_ENDPOINT)
+				.uri(this.heOnlineUrl + "/" + COURSES_ENDPOINT)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
