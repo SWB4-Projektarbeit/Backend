@@ -60,7 +60,7 @@ public class Controller {
                     HttpStatus.OK
             );
         }  catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
