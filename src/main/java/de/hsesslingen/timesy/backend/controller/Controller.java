@@ -30,6 +30,7 @@ public class Controller {
     private final DisplayRepository displayRepository;
     private final TemplateRepository templateRepository;
 
+    @CrossOrigin
     @GetMapping("/rooms")
     public ResponseEntity<?> getAllRooms(@RequestParam(required = false) final String building,
                                          @RequestParam(required = false) final String floor,
@@ -63,17 +64,20 @@ public class Controller {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/templates")
     public ResponseEntity<?> getAllTemplates() {
         return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/templates/update")
     public ResponseEntity<?> updateTemplates() {
         templateRepository.readTemplates();
         return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @PatchMapping("/rooms/{room_uid}")
     public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int roomUid, @RequestBody final int templateUid) {
         List<Display> displayData = displayRepository.findByRoomUid(roomUid);
@@ -91,6 +95,7 @@ public class Controller {
         return new ResponseEntity<>(displayRepository.save(display), HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/display/update")
     public ResponseEntity<?> updateDisplay(@RequestParam(required = false) final Integer roomUid) {
         if (roomUid == null) {
@@ -113,6 +118,7 @@ public class Controller {
         return new ResponseEntity<>(display, HttpStatus.OK);
     }
 
+    @CrossOrigin
     @GetMapping("/dummydata")
     public ResponseEntity<?> createDummyData() {
         Display display1 = new Display(

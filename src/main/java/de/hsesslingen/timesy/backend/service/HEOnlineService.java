@@ -17,8 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
-@Service
 @Slf4j
+@Service
 public class HEOnlineService {
 
     public static final String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/api/appointments";
