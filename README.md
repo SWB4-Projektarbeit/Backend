@@ -1,5 +1,6 @@
 # Backend for TimeSY
 ## Compile:
+Set the templates folder in application.properties. <br>
 Initially run ```mvn clean verify -U``` to verify all dependencies get installed. <br>
 Then use ```mvn spring-boot:run``` to run the Backend.
 

@@ -42,7 +42,7 @@ public class ScheduleEntryMapper {
         if (course == null) {
             return null;
         }
-        Map<Locale,String> localizedTitles = course.title().get("value");
+        Map<Locale, String> localizedTitles = course.title().get("value");
         if (localizedTitles == null) {
             return null;
         }

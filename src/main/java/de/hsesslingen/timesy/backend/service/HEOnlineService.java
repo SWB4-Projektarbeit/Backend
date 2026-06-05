@@ -1,8 +1,8 @@
 package de.hsesslingen.timesy.backend.service;
 
-import de.hsesslingen.timesy.backend.utils.Utils;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
+import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,8 +25,10 @@ public class HEOnlineService {
     public static final String COURSE_ENDPOINT = "he/co/co-tm-core/course/api/courses/{id}";
     public static final String COURSES_ENDPOINT = "he/co/co-tm-core/course/api/courses?limit=10000";
 
-    private static final ParameterizedTypeReference<List<Appointment>> APPOINTMENT_TYPE = new ParameterizedTypeReference<>() {};
-    private static final ParameterizedTypeReference<List<Course>> COURSE_TYPE = new ParameterizedTypeReference<>() {};
+    private static final ParameterizedTypeReference<List<Appointment>> APPOINTMENT_TYPE = new ParameterizedTypeReference<>() {
+    };
+    private static final ParameterizedTypeReference<List<Course>> COURSE_TYPE = new ParameterizedTypeReference<>() {
+    };
 
     private final RestClient restClient;
     private final String heOnlineUrl;

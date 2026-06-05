@@ -19,12 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.awt.*;
-import java.awt.image.*;
 import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @SpringBootTest(useMainMethod = SpringBootTest.UseMainMethod.ALWAYS)
@@ -69,8 +68,8 @@ class BackendApplicationTests {
         }
     }
 
-	@Test
-	void contextLoads(@Autowired final HEOnlineService heOnlineService) {
+    @Test
+    void contextLoads(@Autowired final HEOnlineService heOnlineService) {
         List<Appointment> appointments = heOnlineService.getAppointments();
         if (appointments == null) {
             Assertions.fail("No appointments found");
@@ -82,7 +81,7 @@ class BackendApplicationTests {
             Assertions.assertNotNull(course);
             System.out.println("        - Course: " + course);
         }
-	}
+    }
 
     @Test
     void templateLoads(@Autowired final TemplateRepository repository, @Autowired final DisplayService displayService) {

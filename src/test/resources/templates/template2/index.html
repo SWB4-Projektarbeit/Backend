@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Raumanzeige</title>
-  <link rel="stylesheet" href="styles/room-schedule.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Raumanzeige</title>
+    <link href="styles/room-schedule.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
 <header class="header">
-  <div>
-    <div class="room-name" id="roomName">-</div>
-    <div class="room-name-en" id="roomNameEn">-</div>
-  </div>
-  <div class="date" id="displayDate">-</div>
+    <div>
+        <div class="room-name" id="roomName">-</div>
+        <div class="room-name-en" id="roomNameEn">-</div>
+    </div>
+    <div class="date" id="displayDate">-</div>
 </header>
 
 <div class="spacer"></div>
 
 <main class="schedule" id="scheduleList">
-  <div class="status-msg" id="statusMsg">Lade Stundenplan...</div>
+    <div class="status-msg" id="statusMsg">Lade Stundenplan...</div>
 </main>
 
 <div class="footer-spacer"></div>
 
 <footer class="footer">
-  <div class="hs-logo">
-    <img src="HochschuleEsslingen_Logo_invertiert.jpg" alt="HS Esslingen Logo" />
-  </div>
-  <div id="qrcode"></div>
+    <div class="hs-logo">
+        <img alt="HS Esslingen Logo" src="HochschuleEsslingen_Logo_invertiert.jpg"/>
+    </div>
+    <div id="qrcode"></div>
 </footer>
 
 <div class="footer-meta">
-  <span id="roomId">-</span> &middot; Zuletzt geaendert: <span id="lastChanged">-</span>
+    <span id="roomId">-</span> &middot; Zuletzt geaendert: <span id="lastChanged">-</span>
 </div>
 
 <script src="scripts/room-schedule.js"></script>

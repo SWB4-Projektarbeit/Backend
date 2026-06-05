@@ -1,6 +1,5 @@
 package de.hsesslingen.timesy.backend.controller;
 
-import de.hsesslingen.timesy.backend.dto.BuildingDTO;
 import de.hsesslingen.timesy.backend.mapper.Mapper;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
@@ -8,7 +7,7 @@ import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import de.hsesslingen.timesy.backend.service.DisplayService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import de.hsesslingen.timesy.backend.service.UpdateService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/api-timesy")
 public class Controller {
 
@@ -29,6 +27,24 @@ public class Controller {
     private final HEOnlineService heOnlineService;
     private final DisplayRepository displayRepository;
     private final TemplateRepository templateRepository;
+
+    public Controller(Mapper mapper,
+                      UpdateService updateService,
+                      DisplayService displayService,
+                      HEOnlineService heOnlineService,
+                      DisplayRepository displayRepository,
+                      TemplateRepository templateRepository,
+                      @Value("${dummydata}") final boolean dummyData) {
+        this.mapper = mapper;
+        this.updateService = updateService;
+        this.displayService = displayService;
+        this.heOnlineService = heOnlineService;
+        this.displayRepository = displayRepository;
+        this.templateRepository = templateRepository;
+        if (dummyData) {
+            this.createDummyData();
+        }
+    }
 
     @CrossOrigin
     @GetMapping("/rooms")
@@ -59,8 +75,8 @@ public class Controller {
                     ),
                     HttpStatus.OK
             );
-        }  catch (Exception e) {
-            return new ResponseEntity<>(e.getStackTrace(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -145,6 +161,6 @@ public class Controller {
         );
         displayRepository.save(display2);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return getAllRooms(null, null, null, null, null, null);
     }
 }

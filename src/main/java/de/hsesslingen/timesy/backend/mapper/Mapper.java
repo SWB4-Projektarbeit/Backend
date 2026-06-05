@@ -90,7 +90,7 @@ public class Mapper {
 
         Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
         dataStream.forEach(display -> {
-            if (display == null ||display.getKey() == null || display.getValue() == null) {
+            if (display == null || display.getKey() == null || display.getValue() == null) {
                 return;
             }
             buildingDTOs.computeIfAbsent(display.getValue().getBuildingName(), __ -> new HashMap<>())

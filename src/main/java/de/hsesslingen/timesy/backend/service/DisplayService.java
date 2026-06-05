@@ -13,7 +13,6 @@ import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class DisplayService {
@@ -36,7 +35,7 @@ public class DisplayService {
 
     public byte[] capturePng(final Path path, final Path imagePath) {
         try (Playwright playwright = Playwright.create();
-             Browser browser = playwright.chromium().launch()){
+             Browser browser = playwright.chromium().launch()) {
             Page page = browser.newPage();
             page.navigate(path.resolve("index.html").toAbsolutePath().normalize().toString().replace("\\", "/"));
             Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
