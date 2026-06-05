@@ -11,8 +11,10 @@ import de.hsesslingen.timesy.backend.service.DisplayService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.awt.*;
@@ -27,23 +29,21 @@ import java.util.List;
 @AllArgsConstructor
 class BackendApplicationTests {
 
-	@Test
-	void contextLoads(@Autowired HEOnlineService heOnlineService) {
-        List<Appointment> appointments = heOnlineService.getAppointments();
-        if (appointments == null) {
-            Assertions.fail("No appointments found");
-        }
-        System.out.println("[Tests] HeOnline");
-        for (Appointment appointment : appointments) {
-            System.out.println("    - Appointment: " + appointment);
-            Course course = heOnlineService.getCourse(appointment);
-            Assertions.assertNotNull(course);
-            System.out.println("        - Course: " + course);
-        }
-	}
+    @BeforeAll
+    static void checkProperties(@Value("${heonline.url}") String heOnlineUrl, @Value("${templates.folder}") String templatesFolder) {
+        System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
+        Assertions.assertNotEquals("", heOnlineUrl);
+        System.out.println("[Tests] Templates folder: '" + templatesFolder + "'");
+        Assertions.assertNotEquals("", templatesFolder);
+    }
 
-    @Test
-    void templateLoads(@Autowired TemplateRepository repository, @Autowired DisplayService displayService) {
+    @BeforeAll
+    static void initDB(@Autowired Controller controller) {
+        controller.createDummyData();
+    }
+
+    @BeforeAll
+    static void cleanFolder() {
         System.out.println("[INFO] Clearing TestImages folder to run tests");
         boolean result = true;
         try {
@@ -65,7 +65,25 @@ class BackendApplicationTests {
         } catch (final UncheckedIOException e) {
             System.out.println(e.getMessage());
         }
+    }
 
+	@Test
+	void contextLoads(@Autowired HEOnlineService heOnlineService) {
+        List<Appointment> appointments = heOnlineService.getAppointments();
+        if (appointments == null) {
+            Assertions.fail("No appointments found");
+        }
+        System.out.println("[Tests] HeOnline");
+        for (Appointment appointment : appointments) {
+            System.out.println("    - Appointment: " + appointment);
+            Course course = heOnlineService.getCourse(appointment);
+            Assertions.assertNotNull(course);
+            System.out.println("        - Course: " + course);
+        }
+	}
+
+    @Test
+    void templateLoads(@Autowired TemplateRepository repository, @Autowired DisplayService displayService) {
         repository.readTemplates();
         Collection<TemplateRepository.Template> templates = repository.findAll();
         if (templates.isEmpty()) {
@@ -82,7 +100,6 @@ class BackendApplicationTests {
 
     @Test
     public void mappper(@Autowired DisplayRepository displayRepository, @Autowired Controller controller) {
-        controller.createDummyData();
         System.out.println("[Test] Mapper - Displays");
         for (Display display : displayRepository.findAll()) {
             System.out.println("    - " + display);
@@ -95,5 +112,15 @@ class BackendApplicationTests {
         }
 
         Assertions.assertEquals(2, buildings.size());
+    }
+
+    @Test
+    public void updateTemplate(@Autowired Controller controller, @Autowired TemplateRepository templateRepository) {
+        templateRepository.readTemplates();
+        controller.updateRoom(6976, 124);
+        List<BuildingDTO> buildings = controller.getAllRooms2(null, null, 6976, null, null, null);
+        Assertions.assertEquals(1, buildings.size());
+        Assertions.assertEquals(1, buildings.getFirst().getRooms().size());
+        Assertions.assertEquals(124, buildings.getFirst().getRooms().getFirst().getTemplateUid());
     }
 }

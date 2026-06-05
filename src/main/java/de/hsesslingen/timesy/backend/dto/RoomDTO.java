@@ -12,11 +12,11 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class RoomDTO {
-    private int room_uid;
-    private String room_name;
-    private int template_uid;
-    private String template_name;
+    private int roomUid;
+    private String roomName;
+    private int templateUid;
+    private String templateName;
     private List<ScheduleEntryDTO> schedule;
     private String floor;
-    private List<String> required_permissions;
+    private List<String> requiredPermissions;
 }

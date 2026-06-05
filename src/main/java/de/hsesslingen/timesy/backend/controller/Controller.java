@@ -33,15 +33,15 @@ public class Controller {
     @GetMapping("/rooms")
     public ResponseEntity<?> getAllRooms(final @RequestParam(required = false) String building,
                                          final @RequestParam(required = false) String floor,
-                                         final @RequestParam(required = false) Integer room_uid,
-                                         final @RequestParam(required = false) String room_name,
-                                         final @RequestParam(required = false) Integer course_uid,
-                                         final @RequestParam(required = false) String course_name) {
-        if (room_uid != null && room_name != null) {
+                                         final @RequestParam(required = false) Integer roomUid,
+                                         final @RequestParam(required = false) String roomName,
+                                         final @RequestParam(required = false) Integer courseUid,
+                                         final @RequestParam(required = false) String courseName) {
+        if (roomUid != null && roomName != null) {
             return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
         }
 
-        if (course_uid != null && course_name != null) {
+        if (courseUid != null && courseName != null) {
             return new ResponseEntity<>("COURSE_UID and COURSE_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
         }
 
@@ -51,10 +51,10 @@ public class Controller {
                             heOnlineService.getAppointments(),
                             building,
                             floor,
-                            room_uid,
-                            room_name,
-                            course_uid,
-                            course_name
+                            roomUid,
+                            roomName,
+                            courseUid,
+                            courseName
                     ),
                     HttpStatus.OK
             );
@@ -100,14 +100,14 @@ public class Controller {
     @GetMapping("/templates/update")
     public ResponseEntity<?> updateTemplates() {
         templateRepository.readTemplates();
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
     }
 
     @PatchMapping("/rooms/{room_uid}")
     public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int room_uid, @RequestBody final int templateUid) {
         List<Display> displayData = displayRepository.findByRoomUid(room_uid);
         if (displayData.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("No display found for '" + room_uid + "'", HttpStatus.NOT_FOUND);
         }
 
         Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(templateUid);
