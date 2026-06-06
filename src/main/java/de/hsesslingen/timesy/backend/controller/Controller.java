@@ -8,9 +8,14 @@ import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import de.hsesslingen.timesy.backend.service.DisplayService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import de.hsesslingen.timesy.backend.service.UpdateService;
+import jakarta.annotation.PostConstruct;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,45 +23,38 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api-timesy")
 public class Controller {
 
 	private final Mapper mapper;
 
-	private final UpdateService updateService;
-	private final DisplayService displayService;
-	private final HEOnlineService heOnlineService;
-	private final DisplayRepository displayRepository;
-	private final TemplateRepository templateRepository;
+	private final @NonNull UpdateService updateService;
+	private final @NonNull DisplayService displayService;
+	private final @NonNull HEOnlineService heOnlineService;
+	private final @NonNull DisplayRepository displayRepository;
+	private final @NonNull TemplateRepository templateRepository;
+	@Value("${dummydata}")
+	private boolean dummyData;
 
-	public Controller(Mapper mapper,
-	                  UpdateService updateService,
-	                  DisplayService displayService,
-	                  HEOnlineService heOnlineService,
-	                  DisplayRepository displayRepository,
-	                  TemplateRepository templateRepository,
-	                  @Value("${dummydata}") final boolean dummyData) {
-		this.mapper = mapper;
-		this.updateService = updateService;
-		this.displayService = displayService;
-		this.heOnlineService = heOnlineService;
-		this.displayRepository = displayRepository;
-		this.templateRepository = templateRepository;
-		if (dummyData) {
+	@PostConstruct
+	private void initDD() {
+		if (this.dummyData) {
 			this.createDummyData();
 		}
 	}
 
 	@CrossOrigin
 	@GetMapping("/rooms")
-	public ResponseEntity<?> getAllRooms(@RequestParam(required = false) final String building,
-	                                     @RequestParam(required = false) final String floor,
-	                                     @RequestParam(required = false) final Integer roomUid,
-	                                     @RequestParam(required = false) final String roomName,
-	                                     @RequestParam(required = false) final Integer courseUid,
-	                                     @RequestParam(required = false) final String courseName) {
-		if (roomUid != null && roomName != null) {
+	public @NonNull ResponseEntity<?> getAllRooms(@RequestParam(required = false) @Nullable final String building,
+	                                              @RequestParam(required = false) final @Nullable String floor,
+	                                              @RequestParam(required = false) final @Nullable Integer roomUid,
+	                                              @RequestParam(required = false) final @Nullable String roomName,
+	                                              @RequestParam(required = false) final @Nullable Integer courseUid,
+	                                              @RequestParam(required = false) final @Nullable String courseName) {
+		if (null != roomUid && null != roomName) {
 			return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
 
@@ -64,8 +62,8 @@ public class Controller {
 			return new ResponseEntity<>("COURSE_UID and COURSE_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
 
-		List<BuildingDTO> buildingDTOS = mapper.toBuildingDTOs(
-				heOnlineService.getAppointments(),
+		final @Nullable List<BuildingDTO> buildingDTOS = mapper.toBuildingDTOs(
+				this.heOnlineService.getAppointments(),
 				building,
 				floor,
 				roomUid,
@@ -73,7 +71,7 @@ public class Controller {
 				courseUid,
 				courseName
 		);
-		if (buildingDTOS == null) {
+		if (null == buildingDTOS) {
 			return new ResponseEntity<>("Error while getting BuildingDTOs", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		if (buildingDTOS.isEmpty()) {
@@ -84,73 +82,73 @@ public class Controller {
 					buildingDTOS,
 					HttpStatus.OK
 			);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	@CrossOrigin
 	@GetMapping("/templates")
-	public ResponseEntity<?> getAllTemplates() {
-		Collection<TemplateRepository.Template> templates = templateRepository.findAll();
+	public @NonNull ResponseEntity<?> getAllTemplates() {
+		final @NonNull Collection<TemplateRepository.Template> templates = this.templateRepository.findAll();
 		if (templates.isEmpty()) {
-			return new ResponseEntity<>("No templates found.", HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>("No templates found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(templates, HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@GetMapping("/templates/update")
-	public ResponseEntity<?> updateTemplates() {
-		templateRepository.readTemplates();
+	public @NonNull ResponseEntity<?> updateTemplates() {
+		this.templateRepository.readTemplates();
 		return getAllTemplates();
 	}
 
 	@CrossOrigin
 	@PatchMapping("/rooms/{room_uid}")
-	public ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int roomUid, @RequestBody final int templateUid) {
-		List<Display> displayData = displayRepository.findByRoomUid(roomUid);
+	public @NonNull ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int roomUid, @RequestBody final int templateUid) {
+		final @NonNull List<Display> displayData = this.displayRepository.findByRoomUid(roomUid);
 		if (displayData.isEmpty()) {
 			return new ResponseEntity<>("No display found for '" + roomUid + "'", HttpStatus.NOT_FOUND);
 		}
 
-		Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(templateUid);
+		final @NonNull Optional<TemplateRepository.Template> templateData = this.templateRepository.getByUid(templateUid);
 		if (templateData.isEmpty()) {
 			return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		Display display = displayData.getFirst();
+		final @NonNull Display display = displayData.getFirst();
 		display.setTemplateUid(templateUid);
-		return new ResponseEntity<>(displayRepository.save(display), HttpStatus.OK);
+		return new ResponseEntity<>(this.displayRepository.save(display), HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@GetMapping("/display/update")
-	public ResponseEntity<?> updateDisplay(@RequestParam(required = false) final Integer roomUid) {
-		if (roomUid == null) {
-			updateService.updateDisplays();
+	public @NonNull ResponseEntity<?> updateDisplay(@RequestParam(required = false) final @Nullable Integer roomUid) {
+		if (null == roomUid) {
+			this.updateService.updateDisplays();
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 
-		List<Display> displayData = displayRepository.findByRoomUid(roomUid);
-		if (displayData.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		final @NonNull List<Display> displays = this.displayRepository.findByRoomUid(roomUid);
+		if (displays.isEmpty()) {
+			return new ResponseEntity<>("No displays found", HttpStatus.NOT_FOUND);
 		}
 
-		Display display = displayData.getFirst();
-		Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
+		final @NonNull Display display = displays.getFirst();
+		final @NonNull Optional<TemplateRepository.Template> templateData = this.templateRepository.getByUid(display.getTemplateUid());
 		if (templateData.isEmpty()) {
 			return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		displayService.sendImage(display.getDisplayUid(), templateData.get().getTemplatePath());
+		this.displayService.sendImage(display.getDisplayUid(), templateData.get().templatePath());
 		return new ResponseEntity<>(display, HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@GetMapping("/dummydata")
-	public ResponseEntity<?> createDummyData() {
-		Display display1 = new Display(
+	public @NonNull ResponseEntity<?> createDummyData() {
+		final @NonNull Display display1 = new Display(
 				null,
 				23,
 				6976,
@@ -160,9 +158,9 @@ public class Controller {
 				"Ground floor",
 				new ArrayList<>()
 		);
-		displayRepository.save(display1);
+		this.displayRepository.save(display1);
 
-		Display display2 = new Display(
+		final @NonNull Display display2 = new Display(
 				null,
 				24,
 				6977,
@@ -172,7 +170,7 @@ public class Controller {
 				"First floor",
 				new ArrayList<>()
 		);
-		displayRepository.save(display2);
+		this.displayRepository.save(display2);
 
 		return getAllRooms(null, null, null, null, null, null);
 	}

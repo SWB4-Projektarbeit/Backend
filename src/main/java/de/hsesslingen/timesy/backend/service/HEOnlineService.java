@@ -3,6 +3,7 @@ package de.hsesslingen.timesy.backend.service;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.utils.Utils;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,110 +22,110 @@ import java.util.List;
 @Service
 public class HEOnlineService {
 
-	public static final String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/api/appointments";
-	public static final String COURSE_ENDPOINT = "he/co/co-tm-core/course/api/courses/{id}";
-	public static final String COURSES_ENDPOINT = "he/co/co-tm-core/course/api/courses?limit=10000";
+	public static final @NonNull String APPOINTMENTS_ENDPOINT = "he/co/co-tm-core/course/api/appointments";
+	public static final @NonNull String COURSE_ENDPOINT = "he/co/co-tm-core/course/api/courses/{id}";
+	public static final @NonNull String COURSES_ENDPOINT = "he/co/co-tm-core/course/api/courses?limit=10000";
 
-	private static final ParameterizedTypeReference<List<Appointment>> APPOINTMENT_TYPE = new ParameterizedTypeReference<>() {
+	private static final @NonNull ParameterizedTypeReference<List<Appointment>> APPOINTMENT_TYPE = new ParameterizedTypeReference<>() {
 	};
-	private static final ParameterizedTypeReference<List<Course>> COURSE_TYPE = new ParameterizedTypeReference<>() {
+	private static final @NonNull ParameterizedTypeReference<List<Course>> COURSE_TYPE = new ParameterizedTypeReference<>() {
 	};
 
-	private final RestClient restClient;
-	private final String heOnlineUrl;
+	private final @NonNull RestClient restClient;
+	private final @NonNull String heOnlineUrl;
 
-	public HEOnlineService(@Value("${heonline.url}") final String heOnlineUrl) {
-		Utils.validateUrl(heOnlineUrl);
+	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl) {
+		Utils.validateUrl(heOnlineUrl, "HeOnline");
 		this.heOnlineUrl = heOnlineUrl;
-		restClient = RestClient.builder()
+		this.restClient = RestClient.builder()
 				.build();
 		// TODO: Cookies for KeyCloak instance!
 	}
 
 	public @Nullable Appointment getAppointment(final int appointmentId) {
-		List<Appointment> appointments = getAppointments();
-		if (appointments == null) {
+		final @Nullable List<Appointment> appointments = this.getAppointments();
+		if (null == appointments) {
 			return null;
 		}
 		try {
 			return appointments.stream().filter(appointment -> appointment.uid() == appointmentId).findFirst().orElse(null);
-		} catch (Exception e) {
+		} catch (Exception _) {
 			return null;
 		}
 	}
 
 	public @Nullable List<Appointment> getAppointments() {
-		RestClient.ResponseSpec response = restClient.get()
+		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
 
-		ResponseEntity<@NotNull List<Appointment>> responseEntity;
+		final @NonNull ResponseEntity<@NotNull List<Appointment>> responseEntity;
 		try {
 			responseEntity = response.toEntity(APPOINTMENT_TYPE);
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
+		} catch (final Exception e) {
+			log.error(e.getMessage());
 			return null;
 		}
 
-		if (responseEntity.getStatusCode().value() != 200) {
+		if (200 != responseEntity.getStatusCode().value()) {
 			return null;
 		}
 
 		try {
 			return responseEntity.getBody();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
 
 	public @Nullable Course getCourse(final Appointment appointment) {
-		RestClient.ResponseSpec response = restClient.get()
+		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
 
-		ResponseEntity<@NotNull Course> responseEntity;
+		final @NonNull ResponseEntity<@NotNull Course> responseEntity;
 		try {
 			responseEntity = response.toEntity(Course.class);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 
-		if (responseEntity.getStatusCode().value() != 200) {
+		if (200 != responseEntity.getStatusCode().value()) {
 			return null;
 		}
 
 		try {
 			return responseEntity.getBody();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}
 
 	public @Nullable List<Course> getCourses() {
-		RestClient.ResponseSpec response = restClient.get()
+		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSES_ENDPOINT)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
 
-		ResponseEntity<@NotNull List<Course>> responseEntity;
+		final @NonNull ResponseEntity<@NotNull List<Course>> responseEntity;
 		try {
 			responseEntity = response.toEntity(COURSE_TYPE);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 
-		if (responseEntity.getStatusCode().value() != 200) {
+		if (200 != responseEntity.getStatusCode().value()) {
 			return null;
 		}
 
 		try {
 			return responseEntity.getBody();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			return null;
 		}
 	}

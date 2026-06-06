@@ -6,6 +6,8 @@ import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
@@ -15,21 +17,21 @@ import java.util.Map;
 @AllArgsConstructor
 public class ScheduleEntryMapper {
 
-	private final StatusMapper statusMapper;
-	private final HEOnlineService heOnlineService;
+	private final @NonNull StatusMapper statusMapper;
+	private final @NonNull HEOnlineService heOnlineService;
 
-	public ScheduleEntryDTO toScheduleEntryDTO(final Appointment appointment) {
-		if (appointment == null) {
+	public @Nullable ScheduleEntryDTO toScheduleEntryDTO(final @Nullable Appointment appointment) {
+		if (null == appointment) {
 			return null;
 		}
 
-		String appointmentName = getAppointmentName(appointment);
-		if (appointmentName == null) {
+		final @Nullable String appointmentName = getAppointmentName(appointment);
+		if (null == appointmentName) {
 			return null;
 		}
 
-		StatusDTO status = statusMapper.toStatusDTO(appointment, this);
-		if (status == null) {
+		final @Nullable StatusDTO status = this.statusMapper.toStatusDTO(appointment, this);
+		if (null == status) {
 			return null;
 		}
 
@@ -41,22 +43,22 @@ public class ScheduleEntryMapper {
 		);
 	}
 
-	public ScheduleEntryDTO toScheduleEntryDTO(final int appointmentId) {
-		return toScheduleEntryDTO(heOnlineService.getAppointment(appointmentId));
+	public @Nullable ScheduleEntryDTO toScheduleEntryDTO(final int appointmentId) {
+		return toScheduleEntryDTO(this.heOnlineService.getAppointment(appointmentId));
 	}
 
-	private String getAppointmentName(final Appointment appointment) {
-		if (appointment == null) {
+	private @Nullable String getAppointmentName(final @Nullable Appointment appointment) {
+		if (null == appointment) {
 			return null;
 		}
 
-		Course course = heOnlineService.getCourse(appointment);
-		if (course == null) {
+		final @Nullable Course course = this.heOnlineService.getCourse(appointment);
+		if (null == course) {
 			return null;
 		}
 
-		Map<Locale, String> localizedTitles = course.title().get("value");
-		if (localizedTitles == null) {
+		final @Nullable Map<Locale, String> localizedTitles = course.title().get("value");
+		if (null == localizedTitles) {
 			return null;
 		}
 

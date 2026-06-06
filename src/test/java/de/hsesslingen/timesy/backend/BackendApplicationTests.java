@@ -9,7 +9,10 @@ import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import de.hsesslingen.timesy.backend.service.DisplayService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
+import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +33,7 @@ import java.util.List;
 class BackendApplicationTests {
 
 	@BeforeAll
-	static void initDB(@Autowired final Controller controller) {
+	static void initDB(@Autowired final @NonNull Controller controller) {
 		controller.createDummyData();
 	}
 
@@ -39,11 +42,11 @@ class BackendApplicationTests {
 		System.out.println("[INFO] Clearing TestImages folder to run tests");
 		boolean result = true;
 		try {
-			final File tempFolder = new File("src/test/resources/testimages");
+			final @NonNull File tempFolder = new File("src/test/resources/testimages");
 			if (tempFolder.exists() && tempFolder.listFiles() != null) {
-				final File[] fileList = tempFolder.listFiles();
+				final @Nullable File[] fileList = tempFolder.listFiles();
 				if (fileList != null) {
-					for (final File tempFile : fileList) {
+					for (final @Nullable File tempFile : fileList) {
 						if (tempFile != null && !tempFile.delete()) {
 							result = false;
 						}
@@ -61,25 +64,31 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(1)
-	void checkProperties(@Value("${heonline.url}") final String heOnlineUrl, @Value("${templates.folder}") final String templatesFolder) {
+	void checkProperties(@Value("${heonline.url}") final @NonNull String heOnlineUrl,
+	                     @Value("${displayserver.url}") final @NonNull String displayServerUrl,
+	                     @Value("${templates.folder}") final @NonNull String templatesFolder) {
 		System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
-		Assertions.assertNotEquals("", heOnlineUrl);
+		Assertions.assertNotEquals("\"\"", heOnlineUrl);
+		Utils.validateUrl(heOnlineUrl, "HeOnline");
+		System.out.println("[Tests] DisplayServer URL: '" + displayServerUrl + "'");
+		Assertions.assertNotEquals("\"\"", displayServerUrl);
+		Utils.validateUrl(displayServerUrl, "DisplayServer");
 		System.out.println("[Tests] Templates folder: '" + templatesFolder + "'");
-		Assertions.assertNotEquals("", templatesFolder);
+		Assertions.assertNotEquals("\"\"", templatesFolder);
 		System.out.println();
 	}
 
 	@Test
 	@Order(2)
-	void contextLoads(@Autowired final HEOnlineService heOnlineService) {
-		List<Appointment> appointments = heOnlineService.getAppointments();
+	void contextLoads(@Autowired final @NonNull HEOnlineService heOnlineService) {
+		final @Nullable List<Appointment> appointments = heOnlineService.getAppointments();
 		if (appointments == null) {
 			Assertions.fail("No appointments found");
 		}
 		System.out.println("[Tests] HeOnline");
-		for (Appointment appointment : appointments) {
+		for (final @NonNull Appointment appointment : appointments) {
 			System.out.println("    - Appointment: " + appointment);
-			Course course = heOnlineService.getCourse(appointment);
+			final @Nullable Course course = heOnlineService.getCourse(appointment);
 			Assertions.assertNotNull(course);
 			System.out.println("        - Course: " + course);
 		}
@@ -88,17 +97,17 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(3)
-	void templateLoads(@Autowired final TemplateRepository repository, @Autowired final DisplayService displayService) {
+	void templateLoads(@Autowired final @NonNull TemplateRepository repository, @Autowired final @NonNull DisplayService displayService) {
 		repository.readTemplates();
-		Collection<TemplateRepository.Template> templates = repository.findAll();
+		final @NonNull Collection<TemplateRepository.Template> templates = repository.findAll();
 		if (templates.isEmpty()) {
 			Assertions.fail("No templates found");
 		}
 		System.out.println("[Tests] Templates");
-		for (TemplateRepository.Template template : templates) {
+		for (final @NonNull TemplateRepository.Template template : templates) {
 			System.out.println("    - Template: " + template);
-			System.out.println("        - Path: " + template.getTemplatePath());
-			byte[] imageData = displayService.capturePng(template.getTemplatePath(), Paths.get("src/test/resources/testimages/test.png"));
+			System.out.println("        - Path: " + template.templatePath());
+			final byte[] imageData = displayService.capturePng(template.templatePath(), Paths.get("src/test/resources/testimages/test.png"));
 			System.out.println("        - Imagedata: " + Arrays.toString(imageData));
 		}
 		System.out.println();
@@ -106,20 +115,20 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(4)
-	public void mappper(@Autowired final DisplayRepository displayRepository, @Autowired final Controller controller) {
+	public void mappper(@Autowired final @NonNull DisplayRepository displayRepository, @Autowired final @NonNull Controller controller) {
 		System.out.println("[Test] Mapper - Displays");
-		for (Display display : displayRepository.findAll()) {
+		for (final @NonNull Display display : displayRepository.findAll()) {
 			System.out.println("    - " + display);
 		}
 		System.out.println();
 
-		ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, null, null, null, null);
+		final @NonNull ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, null, null, null, null);
 		Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
 		Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
 		//noinspection unchecked
-		List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
+		final @NonNull List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
 		System.out.println("[Test] Mapper - Buildings");
-		for (BuildingDTO building : buildings) {
+		for (final @NonNull BuildingDTO building : buildings) {
 			System.out.println("    - " + building);
 		}
 		System.out.println();
@@ -129,16 +138,16 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(5)
-	public void updateTemplate(@Autowired final Controller controller, @Autowired final TemplateRepository templateRepository) {
+	public void updateTemplate(@Autowired final @NonNull Controller controller, @Autowired final @NonNull TemplateRepository templateRepository) {
 		templateRepository.readTemplates();
 		controller.updateRoom(6976, 124);
-		ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, 6976, null, null, null);
+		final @NonNull ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, 6976, null, null, null);
 		Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
 		Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
 		//noinspection unchecked
-		List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
+		final @NonNull List<BuildingDTO> buildings = (List<BuildingDTO>) buildingEntity.getBody();
 		Assertions.assertEquals(1, buildings.size());
-		Assertions.assertEquals(1, buildings.getFirst().getRooms().size());
-		Assertions.assertEquals(124, buildings.getFirst().getRooms().getFirst().getTemplateUid());
+		Assertions.assertEquals(1, buildings.getFirst().rooms().size());
+		Assertions.assertEquals(124, buildings.getFirst().rooms().getFirst().templateUid());
 	}
 }

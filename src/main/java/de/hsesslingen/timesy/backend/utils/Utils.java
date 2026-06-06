@@ -1,23 +1,23 @@
 package de.hsesslingen.timesy.backend.utils;
 
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class Utils {
 
-	public void validateUrl(final @NotNull String url) {
-		if (url.isEmpty()) {
-			throw new IllegalArgumentException("Die HeOnline URL darf nicht leer sein.");
+	private static final @NonNull Pattern URL_PATTERN = Pattern.compile("^(https?://)?([.\\w])*(:\\d+)?$");
+
+	public void validateUrl(final @NonNull String url, final @NonNull String urlName) {
+		final @NonNull String strippedUrl = url.strip();
+		if (strippedUrl.isEmpty() || strippedUrl.equals("\"\"")) {
+			throw new IllegalArgumentException("Die " + urlName + " URL darf nicht leer sein.");
 		}
 
-		/**
-		 try {
-		 //noinspection ResultOfMethodCallIgnored
-		 URI.create(url).toURL();
-		 } catch (MalformedURLException | IllegalArgumentException e) {
-		 throw new IllegalArgumentException("'" + url + "' ist keine valide URL.");
-		 }
-		 */
+		if (!URL_PATTERN.matcher(strippedUrl).matches()) {
+			throw new IllegalArgumentException("Die " + urlName + " URL ist keine valide URL.");
+		}
 	}
 }

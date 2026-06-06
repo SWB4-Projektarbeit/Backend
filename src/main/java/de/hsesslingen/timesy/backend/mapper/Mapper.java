@@ -10,6 +10,8 @@ import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import de.zeanon.storagemanagercore.internal.utility.basic.Pair;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -19,26 +21,23 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class Mapper {
 
-	private final RoomMapper roomMapper;
+	private final @NonNull RoomMapper roomMapper;
+	private final @NonNull HEOnlineService heOnlineService;
+	private final @NonNull DisplayRepository displayRepository;
+	private final @NonNull ScheduleEntryMapper scheduleEntryMapper;
 
-	private final ScheduleEntryMapper scheduleEntryMapper;
-
-	private final DisplayRepository displayRepository;
-
-	private final HEOnlineService heOnlineService;
-
-	public List<BuildingDTO> toBuildingDTOs(final List<Appointment> appointments,
-	                                        final String building,
-	                                        final String floor,
-	                                        final Integer roomUid,
-	                                        final String roomName,
-	                                        final Integer courseUid,
-	                                        final String courseName) {
-		if (appointments == null) {
+	public @Nullable List<BuildingDTO> toBuildingDTOs(final @Nullable List<Appointment> appointments,
+	                                                  final @Nullable String building,
+	                                                  final @Nullable String floor,
+	                                                  final @Nullable Integer roomUid,
+	                                                  final @Nullable String roomName,
+	                                                  final @Nullable Integer courseUid,
+	                                                  final @Nullable String courseName) {
+		if (null == appointments) {
 			return null;
 		}
 
-		Stream<Appointment> appointmentStream = appointments.stream();
+		@NonNull Stream<Appointment> appointmentStream = appointments.stream();
 		if (roomUid != null) {
 			appointmentStream = appointmentStream.filter(appointment -> appointment.roomUid() == roomUid);
 		}
@@ -47,12 +46,12 @@ public class Mapper {
 		}
 		if (courseName != null) {
 			appointmentStream = appointmentStream.filter(appointment -> {
-				Course course = heOnlineService.getCourse(appointment);
+				final @Nullable Course course = this.heOnlineService.getCourse(appointment);
 				if (course == null) {
 					return false;
 				}
 
-				Map<Locale, String> localizedTitles = course.title().get("value");
+				final @Nullable Map<Locale, String> localizedTitles = course.title().get("value");
 				if (localizedTitles == null) {
 					return false;
 				}
@@ -61,9 +60,9 @@ public class Mapper {
 			});
 		}
 
-		Stream<Pair<Appointment, Display>> dataStream = appointmentStream.flatMap(
+		@NonNull Stream<Pair<Appointment, Display>> dataStream = appointmentStream.flatMap(
 				appointment -> {
-					List<Display> displays = displayRepository.findByRoomUid(appointment.roomUid());
+					List<Display> displays = this.displayRepository.findByRoomUid(appointment.roomUid());
 					if (displays.isEmpty()) {
 						return Stream.empty();
 					}
@@ -95,20 +94,20 @@ public class Mapper {
 			});
 		}
 
-		Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
+		final @NonNull Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
 		dataStream.forEach(display -> {
 			if (display == null || display.getKey() == null || display.getValue() == null) {
 				return;
 			}
-			RoomDTO room = buildingDTOs
+			final @Nullable RoomDTO room = buildingDTOs
 					.computeIfAbsent(display.getValue().getBuildingName(), _ -> new HashMap<>())
-					.computeIfAbsent(display.getKey().roomUid(), _ -> roomMapper.toRoomDTO(display.getKey(), display.getValue()));
+					.computeIfAbsent(display.getKey().roomUid(), _ -> this.roomMapper.toRoomDTO(display.getKey(), display.getValue()));
 			if (room == null) {
 				return;
 			}
-			ScheduleEntryDTO scheduleEntry = scheduleEntryMapper.toScheduleEntryDTO(display.getKey());
+			final @Nullable ScheduleEntryDTO scheduleEntry = this.scheduleEntryMapper.toScheduleEntryDTO(display.getKey());
 			if (scheduleEntry != null) {
-				room.getSchedule().add(scheduleEntry);
+				room.schedule().add(scheduleEntry);
 			}
 		});
 

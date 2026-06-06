@@ -3,11 +3,9 @@ package de.hsesslingen.timesy.backend.repository;
 import de.zeanon.jsonfilemanager.JsonFileManager;
 import de.zeanon.jsonfilemanager.internal.files.raw.JsonFile;
 import de.zeanon.storagemanagercore.internal.utility.basic.BaseFileUtils;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,69 +18,73 @@ import java.util.*;
 @Component
 public class TemplateRepository {
 
-	private final String templatesFolder;
-	private final Map<Integer, Template> templates = new HashMap<>();
+	private final @NonNull String templatesFolder;
+	private final @NonNull Map<Integer, Template> templates = new HashMap<>();
 
-	public TemplateRepository(@Value("${templates.folder}") final String templatesFolder) {
+	public TemplateRepository(@Value("${templates.folder}") final @NonNull String templatesFolder) {
 		this.templatesFolder = templatesFolder;
 		readTemplates();
 	}
 
 	public void readTemplates() {
 		try {
-			Set<Integer> toRemove = new HashSet<>(templates.keySet());
-			List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
-			for (File template : templateFolders) {
-				File[] templateFiles = template.listFiles();
-				if (templateFiles == null || templateFiles.length == 0) {
-					log.info("The folder '{}' was empty and thus skipped.", template.getName());
+			final @NonNull Set<Integer> toRemove = new HashSet<>(this.templates.keySet());
+			final @NonNull List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
+			for (final @NonNull File templateFolder : templateFolders) {
+				final @Nullable File[] templateFiles = templateFolder.listFiles();
+				if (null == templateFiles || templateFiles.length == 0) {
+					log.info("The folder '{}' was empty and thus skipped.", templateFolder.getName());
 					continue;
 				}
-				File metaDataFile = Arrays.stream(templateFiles).filter(
-						templateFile -> templateFile.getName().equals("metadata.json")
+				final @Nullable File metaDataFile = Arrays.stream(templateFiles).filter(
+						templateFile -> templateFile != null && templateFile.getName().equals("metadata.json")
 				).findFirst().orElse(null);
-				if (metaDataFile == null) {
-					log.info("No metadata.json was found in '{}', skipping...", template.getName());
+				if (null == metaDataFile) {
+					log.info("No metadata.json was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}
 
-				if (Arrays.stream(templateFiles).filter(
-						templateFile -> templateFile.getName().equals("index.html")
-				).findFirst().orElse(null) == null) {
-					log.info("No index.html was found in '{}', skipping...", template.getName());
+				if (Arrays.stream(templateFiles).anyMatch(templateFile -> templateFile != null && templateFile.getName().equals("index.html"))) {
+					log.info("No index.html was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}
 
-				JsonFile metaData = JsonFileManager.jsonFile(metaDataFile).create();
-				Integer templateUid = metaData.getInt("template_uid");
-				this.templates.put(templateUid, new Template(
+				final @NonNull JsonFile metaData = JsonFileManager.jsonFile(metaDataFile).create();
+				if (!metaData.hasKey("template_uid")) {
+					log.info("metadata.json in '{}' is missing 'template_uid', skipping...", templateFolder.getName());
+					continue;
+				}
+				if (!metaData.hasKey("template_name")) {
+					log.info("metadata.json in '{}' is missing 'template_name', skipping...", templateFolder.getName());
+					continue;
+				}
+				final int templateUid = metaData.getInt("template_uid");
+				this.templates.put(
 						templateUid,
-						metaData.getString("template_name"),
-						template.toPath().toAbsolutePath().normalize()
-				));
+						new Template(
+								templateUid,
+								metaData.getString("template_name"),
+								templateFolder.toPath().toAbsolutePath().normalize()
+						));
 				toRemove.remove(templateUid);
 			}
-			toRemove.forEach(templates::remove);
-		} catch (IOException _) {
-
+			toRemove.forEach(this.templates::remove);
+		} catch (final IOException e) {
+			log.warn("Error while reading templates folder: \n{}", e.getMessage());
 		}
 	}
 
-	public Collection<Template> findAll() {
+	public @NonNull Collection<Template> findAll() {
 		return this.templates.values();
 	}
 
-	public Optional<Template> getByUid(final int templateUid) {
-		return Optional.ofNullable(templates.get(templateUid));
+	public @NonNull Optional<Template> getByUid(final int templateUid) {
+		return Optional.ofNullable(this.templates.get(templateUid));
 	}
 
-	@Getter
-	@Setter
-	@ToString
-	@AllArgsConstructor
-	public static class Template {
-		public int templateUid;
-		public String templateName;
-		public Path templatePath;
+
+	public record Template(int templateUid,
+	                       String templateName,
+	                       Path templatePath) {
 	}
 }

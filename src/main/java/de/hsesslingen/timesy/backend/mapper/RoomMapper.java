@@ -5,6 +5,8 @@ import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,18 +16,23 @@ import java.util.Optional;
 @AllArgsConstructor
 public class RoomMapper {
 
-	private final TemplateRepository templateRepository;
+	private final @NonNull TemplateRepository templateRepository;
 
-	public RoomDTO toRoomDTO(final Appointment appointment, final Display display) {
-		if (appointment == null) {
+	public @Nullable RoomDTO toRoomDTO(final @Nullable Appointment appointment, final @Nullable Display display) {
+		if (null == appointment) {
 			return null;
 		}
-		Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
+
+		if (null == display) {
+			return null;
+		}
+
+		final @NonNull Optional<TemplateRepository.Template> templateData = this.templateRepository.getByUid(display.getTemplateUid());
 		return templateData.map(template -> new RoomDTO(
 				appointment.roomUid(),
 				display.getRoomName(),
 				display.getTemplateUid(),
-				template.getTemplateName(),
+				template.templateName(),
 				new ArrayList<>(),
 				display.getFloor(),
 				display.getRequiredPermissions()

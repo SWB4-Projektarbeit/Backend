@@ -4,23 +4,19 @@ import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @EnableScheduling
 @AllArgsConstructor
 public class UpdateService {
 
-	private static final long DELAY_MS = 90 * 60 * 1000;
-
-	private final DisplayService displayService;
-	private final DisplayRepository displayRepository;
-	private final TemplateRepository templateRepository;
-	private final HEOnlineService heOnlineService;
+	private final @NonNull DisplayService displayService;
+	private final @NonNull DisplayRepository displayRepository;
+	private final @NonNull TemplateRepository templateRepository;
 
 	@Scheduled(cron = "0 45 7 * * *")
 	@Scheduled(cron = "0 15 9 * * *")
@@ -30,12 +26,8 @@ public class UpdateService {
 	@Scheduled(cron = "0 0 17 * * *")
 	@Scheduled(cron = "0 45 16 * * *")
 	public void updateDisplays() {
-		for (Display display : displayRepository.findAll()) {
-			Optional<TemplateRepository.Template> templateData = templateRepository.getByUid(display.getTemplateUid());
-			if (templateData.isEmpty()) {
-				continue;
-			}
-			displayService.sendImage(display.getDisplayUid(), templateData.get().getTemplatePath());
+		for (final @NonNull Display display : this.displayRepository.findAll()) {
+			this.templateRepository.getByUid(display.getTemplateUid()).ifPresent(template -> this.displayService.sendImage(display.getDisplayUid(), template.templatePath()));
 		}
 	}
 }
