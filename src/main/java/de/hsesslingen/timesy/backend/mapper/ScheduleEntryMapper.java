@@ -1,6 +1,7 @@
 package de.hsesslingen.timesy.backend.mapper;
 
 import de.hsesslingen.timesy.backend.dto.ScheduleEntryDTO;
+import de.hsesslingen.timesy.backend.dto.StatusDTO;
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
@@ -14,19 +15,29 @@ import java.util.Map;
 @AllArgsConstructor
 public class ScheduleEntryMapper {
 
-	private final HEOnlineService heOnlineService;
-
 	private final StatusMapper statusMapper;
+	private final HEOnlineService heOnlineService;
 
 	public ScheduleEntryDTO toScheduleEntryDTO(final Appointment appointment) {
 		if (appointment == null) {
 			return null;
 		}
+
+		String appointmentName = getAppointmentName(appointment);
+		if (appointmentName == null) {
+			return null;
+		}
+
+		StatusDTO status = statusMapper.toStatusDTO(appointment, this);
+		if (status == null) {
+			return null;
+		}
+
 		return new ScheduleEntryDTO(
-				getAppointmentName(appointment),
+				appointmentName,
 				appointment.startAt(),
 				appointment.endAt(),
-				statusMapper.toStatusDTO(appointment, this)
+				status
 		);
 	}
 
@@ -38,14 +49,17 @@ public class ScheduleEntryMapper {
 		if (appointment == null) {
 			return null;
 		}
+
 		Course course = heOnlineService.getCourse(appointment);
 		if (course == null) {
 			return null;
 		}
+
 		Map<Locale, String> localizedTitles = course.title().get("value");
 		if (localizedTitles == null) {
 			return null;
 		}
+
 		return localizedTitles.get(Locale.GERMANY);
 	}
 }

@@ -21,7 +21,6 @@ import java.util.*;
 public class TemplateRepository {
 
 	private final String templatesFolder;
-
 	private final Map<Integer, Template> templates = new HashMap<>();
 
 	public TemplateRepository(@Value("${templates.folder}") final String templatesFolder) {

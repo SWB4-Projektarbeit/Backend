@@ -1,5 +1,6 @@
 package de.hsesslingen.timesy.backend.controller;
 
+import de.hsesslingen.timesy.backend.dto.BuildingDTO;
 import de.hsesslingen.timesy.backend.mapper.Mapper;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,17 +64,24 @@ public class Controller {
 			return new ResponseEntity<>("COURSE_UID and COURSE_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
 
+		List<BuildingDTO> buildingDTOS = mapper.toBuildingDTOs(
+				heOnlineService.getAppointments(),
+				building,
+				floor,
+				roomUid,
+				roomName,
+				courseUid,
+				courseName
+		);
+		if (buildingDTOS == null) {
+			return new ResponseEntity<>("Error while getting BuildingDTOs", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if (buildingDTOS.isEmpty()) {
+			return new ResponseEntity<>("No BuildingDTOs found", HttpStatus.NOT_FOUND);
+		}
 		try {
 			return new ResponseEntity<>(
-					mapper.toBuildingDTOs(
-							heOnlineService.getAppointments(),
-							building,
-							floor,
-							roomUid,
-							roomName,
-							courseUid,
-							courseName
-					),
+					buildingDTOS,
 					HttpStatus.OK
 			);
 		} catch (Exception e) {
@@ -83,14 +92,18 @@ public class Controller {
 	@CrossOrigin
 	@GetMapping("/templates")
 	public ResponseEntity<?> getAllTemplates() {
-		return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
+		Collection<TemplateRepository.Template> templates = templateRepository.findAll();
+		if (templates.isEmpty()) {
+			return new ResponseEntity<>("No templates found.", HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(templates, HttpStatus.OK);
 	}
 
 	@CrossOrigin
 	@GetMapping("/templates/update")
 	public ResponseEntity<?> updateTemplates() {
 		templateRepository.readTemplates();
-		return new ResponseEntity<>(templateRepository.findAll(), HttpStatus.OK);
+		return getAllTemplates();
 	}
 
 	@CrossOrigin
