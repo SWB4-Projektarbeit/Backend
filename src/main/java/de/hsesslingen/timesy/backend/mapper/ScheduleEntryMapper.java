@@ -25,8 +25,8 @@ public class ScheduleEntryMapper {
 			return null;
 		}
 
-		final @Nullable String appointmentName = getAppointmentName(appointment);
-		if (null == appointmentName) {
+		final @Nullable Map<Locale, String> appointmentNames = getAppointmentNames(appointment);
+		if (null == appointmentNames) {
 			return null;
 		}
 
@@ -36,9 +36,11 @@ public class ScheduleEntryMapper {
 		}
 
 		return new ScheduleEntryDTO(
-				appointmentName,
+				appointmentNames.get(Locale.GERMAN),
+				appointmentNames.get(Locale.ENGLISH),
 				appointment.startAt(),
 				appointment.endAt(),
+				appointment.roomUid(),
 				status
 		);
 	}
@@ -47,7 +49,7 @@ public class ScheduleEntryMapper {
 		return toScheduleEntryDTO(this.heOnlineService.getAppointment(appointmentId));
 	}
 
-	private @Nullable String getAppointmentName(final @Nullable Appointment appointment) {
+	private @Nullable Map<Locale, String> getAppointmentNames(final @Nullable Appointment appointment) {
 		if (null == appointment) {
 			return null;
 		}
@@ -57,11 +59,6 @@ public class ScheduleEntryMapper {
 			return null;
 		}
 
-		final @Nullable Map<Locale, String> localizedTitles = course.title().get("value");
-		if (null == localizedTitles) {
-			return null;
-		}
-
-		return localizedTitles.get(Locale.GERMANY);
+		return course.title().get("value");
 	}
 }

@@ -24,8 +24,9 @@ public class DisplayService {
 
 	public static final @NonNull String LOCATION_DTO_ENDPOINT = "/api/location/%d";
 	public static final @NonNull String IMAGE_ENDPOINT = "/api/location/%d/mem_combo/%d";
-
 	private final @NonNull RestClient restClient;
+	@Value("${server.port}")
+	private int port;
 
 	public DisplayService(@Value("${displayserver.url}") final String displayServerUrl) {
 		Utils.validateUrl(displayServerUrl, "DisplayServer");
@@ -42,7 +43,13 @@ public class DisplayService {
 		try (final @NonNull Playwright playwright = Playwright.create();
 			 final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
-			page.navigate(path.resolve("index.html").toAbsolutePath().normalize().toString().replace("\\", "/").concat("?" + roomUid));
+			page.navigate(path
+					.resolve("index.html")
+					.toAbsolutePath()
+					.normalize()
+					.toString()
+					.replace("\\", "/")
+					.concat("?http://localhost:" + port + "/api-timesy/templates/data/" + roomUid));
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);

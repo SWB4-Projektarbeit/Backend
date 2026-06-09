@@ -1,7 +1,9 @@
 package de.hsesslingen.timesy.backend.controller;
 
 import de.hsesslingen.timesy.backend.dto.BuildingDTO;
+import de.hsesslingen.timesy.backend.dto.TemplateDataDTO;
 import de.hsesslingen.timesy.backend.mapper.Mapper;
+import de.hsesslingen.timesy.backend.mapper.TemplateDataMapper;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
@@ -30,6 +32,7 @@ import java.util.Optional;
 public class Controller {
 
 	private final Mapper mapper;
+	private final TemplateDataMapper templateDataMapper;
 
 	private final @NonNull UpdateService updateService;
 	private final @NonNull DisplayService displayService;
@@ -53,7 +56,8 @@ public class Controller {
 												  @RequestParam(required = false) final @Nullable Integer roomUid,
 												  @RequestParam(required = false) final @Nullable String roomName,
 												  @RequestParam(required = false) final @Nullable Integer courseUid,
-												  @RequestParam(required = false) final @Nullable String courseName) {
+												  @RequestParam(required = false) final @Nullable String courseName,
+												  @RequestParam(required = false) final @Nullable String roomType) {
 		if (null != roomUid && null != roomName) {
 			return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
@@ -69,7 +73,8 @@ public class Controller {
 				roomUid,
 				roomName,
 				courseUid,
-				courseName
+				courseName,
+				roomType
 		);
 		if (null == buildingDTOS) {
 			return new ResponseEntity<>("Error while getting BuildingDTOs", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,8 +104,12 @@ public class Controller {
 
 	@CrossOrigin
 	@GetMapping("/templates/data/{room_uid}")
-	public @NonNull ResponseEntity<?> getAllTemplatesData(@PathVariable("room_uid") final int roomUid) {
-
+	public @NonNull ResponseEntity<?> getTemplateData(@PathVariable("room_uid") final int roomUid) {
+		final @Nullable TemplateDataDTO templateData = this.templateDataMapper.getTemplateDataDTO(roomUid);
+		if (null == templateData) {
+			return new ResponseEntity<>("Error while getting TemplateData", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(templateData, HttpStatus.OK);
 	}
 
 	@CrossOrigin
@@ -160,6 +169,8 @@ public class Controller {
 				6976,
 				123,
 				"Room1",
+				"Vorlesungssaal",
+				"Lecture Hall",
 				"Building1",
 				"Ground floor",
 				new ArrayList<>()
@@ -172,12 +183,14 @@ public class Controller {
 				6977,
 				124,
 				"Room2",
+				"Vorlesungssaal",
+				"Lecture Hall",
 				"Building2",
 				"First floor",
 				new ArrayList<>()
 		);
 		this.displayRepository.save(display2);
 
-		return getAllRooms(null, null, null, null, null, null);
+		return getAllRooms(null, null, null, null, null, null, null);
 	}
 }

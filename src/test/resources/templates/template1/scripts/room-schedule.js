@@ -1,35 +1,4 @@
-const DATA = {
-    room: {
-        id: "F 01.-109",
-        name: "Vorlesungssaal",
-        nameEn: "Lecture Hall",
-        lastChanged: "15.30",
-        scheduleUrl: "https://www3.hs-esslingen.de/qislsf/rds?state=wplan&act=Raum&pool=Raum&raum.rgid=318"
-    },
-    date: "15.04.2026",
-    slots: [
-        {
-            timeStart: "09:45",
-            timeEnd: "13:00",
-            title: "Physik fuer Ingenieure",
-            titleEn: "Physics for Engineers",
-            type: "booked"
-        },
-        {timeStart: "09:45", timeEnd: "13:00", title: "FREI - 30 Min", titleEn: "FREE - 30 Min", type: "active"},
-        {
-            timeStart: "09:45",
-            timeEnd: "13:00",
-            title: "Softwareentwicklung → F 01.-211",
-            titleEn: "Software Development",
-            type: "booked"
-        },
-        {timeStart: "09:45", timeEnd: "13:00", title: "FREI - 30 Min", titleEn: "FREE - 30 Min", type: "free"},
-        {timeStart: "09:45", timeEnd: "13:00", title: "Datenbanken", titleEn: "Databases", type: "cancelled"},
-        {timeStart: "09:45", timeEnd: "13:00", title: "FREI - 30 Min", titleEn: "FREE - 30 Min", type: "free"},
-    ]
-};
-
-function getRoomUid() {
+function getDataUrl() {
     const idx = document.URL.indexOf('?');
     if (idx !== -1) {
         return document.URL.substring(idx + 1, document.URL.length);
@@ -44,10 +13,10 @@ function esc(s) {
 }
 
 function render(data) {
-    document.getElementById('roomName').textContent = data.room.name;
-    document.getElementById('roomNameEn').textContent = data.room.nameEn;
+    document.getElementById('roomName').textContent = data.room.type;
+    document.getElementById('roomNameEn').textContent = data.room.typeEn;
     document.getElementById('displayDate').textContent = data.date;
-    document.getElementById('roomId').textContent = data.room.id;
+    document.getElementById('roomId').textContent = data.room.name;
     document.getElementById('lastChanged').textContent = data.room.lastChanged;
 
     if (data.room.scheduleUrl) {
@@ -66,7 +35,9 @@ function render(data) {
             '<span class="time-end">' + esc(s.timeEnd) + '</span>' +
             '</div>' +
             '<div class="content-col">' +
-            '<div class="slot-title">' + esc(s.title) + '</div>' +
+            '<div class="slot-title">' + esc(s.title) +
+            (s.movedTo ? '<span class="slot-moved"><span class="slot-moved-arrow">→</span>' + esc(s.movedTo) + '</span>' : '') +
+            '</div>' +
             (s.titleEn ? '<div class="slot-subtitle">' + esc(s.titleEn) + '</div>' : '') +
             '</div>';
         list.appendChild(el);
@@ -86,7 +57,15 @@ function generateQR(url) {
     });
 }
 
-// MOCK - ersetzen mit: fetch('/api/room/F01-109').then(r => r.json()).then(render);
-render(DATA);
+function scaleCanvas() {
+    const scale = Math.min(window.innerWidth / 1200, window.innerHeight / 1600);
+    const offsetX = (window.innerWidth - 1200 * scale) / 2;
+    document.body.style.transform = `scale(${scale})`;
+    document.body.style.marginLeft = offsetX + 'px';
+}
 
-console.log(getRoomUid());
+window.addEventListener('resize', scaleCanvas);
+scaleCanvas();
+
+// MOCK - ersetzen mit: fetch('/api/room/F01-109').then(r => r.json()).then(render);
+fetch(getDataUrl()).then(r => r.json()).then(render);

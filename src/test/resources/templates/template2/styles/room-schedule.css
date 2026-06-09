@@ -45,11 +45,11 @@ body {
     color: #fff;
     font-family: 'DIN Pro';
     width: 1200px;
-    min-height: 1600px;
-    margin: 0 auto;
+    height: 1600px;
+    transform-origin: top left;
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow: hidden;
 }
 
 /* Header */
@@ -80,15 +80,15 @@ body {
 }
 
 .spacer {
-    flex: 1;
-    max-height: 80px;
-    min-height: 40px;
+    flex: 0 1 80px;
+    min-height: 0;
 }
 
 .schedule {
-    display: grid;
-    grid-template-rows: repeat(auto-fill, 1fr);
-    flex: 1; /* nimmt den restlichen Platz zwischen Header und Footer */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
 }
 
 /* Slots */
@@ -96,7 +96,9 @@ body {
     display: grid;
     grid-template-columns:150px 1fr;
     border-bottom: 1px solid #fff;
+    flex: 1;
     min-height: 0;
+    overflow: hidden;
 }
 
 .slot:last-child {
@@ -126,6 +128,16 @@ body {
 
 .slot.cancelled .slot-title {
     text-decoration: line-through;
+}
+
+.slot-moved {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-left: 16px;
+}
+
+.slot-moved-arrow {
+    margin-right: 6px;
 }
 
 .time-col {
@@ -174,8 +186,8 @@ body {
 }
 
 .footer-spacer {
-    flex: 2;
-    min-height: 60px;
+    flex: 0 1 60px;
+    min-height: 0;
 }
 
 /* Footer */

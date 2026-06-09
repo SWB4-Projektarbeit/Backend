@@ -30,6 +30,12 @@ public class Display {
 	private String roomName;
 
 	@Column
+	private String roomType;
+
+	@Column
+	private String roomTypeEn;
+
+	@Column
 	private String buildingName;
 
 	@Column

@@ -31,6 +31,8 @@ public class RoomMapper {
 		return templateData.map(template -> new RoomDTO(
 				appointment.roomUid(),
 				display.getRoomName(),
+				display.getRoomType(),
+				display.getRoomTypeEn(),
 				display.getTemplateUid(),
 				template.templateName(),
 				new ArrayList<>(),

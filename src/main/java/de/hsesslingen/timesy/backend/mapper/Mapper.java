@@ -32,7 +32,8 @@ public class Mapper {
 													  final @Nullable Integer roomUid,
 													  final @Nullable String roomName,
 													  final @Nullable Integer courseUid,
-													  final @Nullable String courseName) {
+													  final @Nullable String courseName,
+													  final @Nullable String roomType) {
 		if (null == appointments) {
 			return null;
 		}
@@ -62,8 +63,8 @@ public class Mapper {
 
 		@NonNull Stream<Pair<Appointment, Display>> dataStream = appointmentStream.flatMap(
 				appointment -> {
-					List<Display> displays = this.displayRepository.findByRoomUid(appointment.roomUid());
-					if (displays.isEmpty()) {
+					final @Nullable List<Display> displays = this.displayRepository.findByRoomUid(appointment.roomUid());
+					if (displays == null || displays.isEmpty()) {
 						return Stream.empty();
 					}
 					return Stream.of(new Pair<>(appointment, displays.getFirst()));
@@ -93,19 +94,27 @@ public class Mapper {
 				return Objects.equals(entry.getValue().getBuildingName(), building);
 			});
 		}
+		if (roomType != null) {
+			dataStream = dataStream.filter(entry -> {
+				if (entry == null || entry.getValue() == null) {
+					return false;
+				}
+				return Objects.equals(entry.getValue().getRoomType(), roomType);
+			});
+		}
 
 		final @NonNull Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
-		dataStream.forEach(display -> {
-			if (display == null || display.getKey() == null || display.getValue() == null) {
+		dataStream.forEach(entry -> {
+			if (entry == null || entry.getKey() == null || entry.getValue() == null) {
 				return;
 			}
 			final @Nullable RoomDTO room = buildingDTOs
-					.computeIfAbsent(display.getValue().getBuildingName(), _ -> new HashMap<>())
-					.computeIfAbsent(display.getKey().roomUid(), _ -> this.roomMapper.toRoomDTO(display.getKey(), display.getValue()));
+					.computeIfAbsent(entry.getValue().getBuildingName(), _ -> new HashMap<>())
+					.computeIfAbsent(entry.getKey().roomUid(), _ -> this.roomMapper.toRoomDTO(entry.getKey(), entry.getValue()));
 			if (room == null) {
 				return;
 			}
-			final @Nullable ScheduleEntryDTO scheduleEntry = this.scheduleEntryMapper.toScheduleEntryDTO(display.getKey());
+			final @Nullable ScheduleEntryDTO scheduleEntry = this.scheduleEntryMapper.toScheduleEntryDTO(entry.getKey());
 			if (scheduleEntry != null) {
 				room.schedule().add(scheduleEntry);
 			}
