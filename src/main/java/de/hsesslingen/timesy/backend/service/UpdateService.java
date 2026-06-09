@@ -27,7 +27,7 @@ public class UpdateService {
 	@Scheduled(cron = "0 45 16 * * *")
 	public void updateDisplays() {
 		for (final @NonNull Display display : this.displayRepository.findAll()) {
-			this.templateRepository.getByUid(display.getTemplateUid()).ifPresent(template -> this.displayService.sendImage(display.getDisplayUid(), template.templatePath()));
+			this.templateRepository.getByUid(display.getTemplateUid()).ifPresent(template -> this.displayService.sendImage(display, template.templatePath()));
 		}
 	}
 }

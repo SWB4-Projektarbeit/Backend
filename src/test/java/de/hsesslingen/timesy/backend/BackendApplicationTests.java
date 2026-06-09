@@ -65,8 +65,8 @@ class BackendApplicationTests {
 	@Test
 	@Order(1)
 	void checkProperties(@Value("${heonline.url}") final @NonNull String heOnlineUrl,
-	                     @Value("${displayserver.url}") final @NonNull String displayServerUrl,
-	                     @Value("${templates.folder}") final @NonNull String templatesFolder) {
+						 @Value("${displayserver.url}") final @NonNull String displayServerUrl,
+						 @Value("${templates.folder}") final @NonNull String templatesFolder) {
 		System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
 		Assertions.assertNotEquals("\"\"", heOnlineUrl);
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
@@ -107,7 +107,7 @@ class BackendApplicationTests {
 		for (final @NonNull TemplateRepository.Template template : templates) {
 			System.out.println("    - Template: " + template);
 			System.out.println("        - Path: " + template.templatePath());
-			final byte[] imageData = displayService.capturePng(template.templatePath(), Paths.get("src/test/resources/testimages/test.png"));
+			final byte[] imageData = displayService.capturePng(template.templatePath(), 6976, Paths.get("src/test/resources/testimages/test.png"));
 			System.out.println("        - Imagedata: " + Arrays.toString(imageData));
 		}
 		System.out.println();

@@ -44,7 +44,7 @@ public class TemplateRepository {
 					continue;
 				}
 
-				if (Arrays.stream(templateFiles).anyMatch(templateFile -> templateFile != null && templateFile.getName().equals("index.html"))) {
+				if (Arrays.stream(templateFiles).noneMatch(templateFile -> templateFile != null && templateFile.getName().equals("index.html"))) {
 					log.info("No index.html was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}
@@ -84,7 +84,7 @@ public class TemplateRepository {
 
 
 	public record Template(int templateUid,
-	                       String templateName,
-	                       Path templatePath) {
+						   String templateName,
+						   Path templatePath) {
 	}
 }

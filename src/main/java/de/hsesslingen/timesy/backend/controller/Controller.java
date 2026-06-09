@@ -48,12 +48,12 @@ public class Controller {
 
 	@CrossOrigin
 	@GetMapping("/rooms")
-	public @NonNull ResponseEntity<?> getAllRooms(@RequestParam(required = false) @Nullable final String building,
-	                                              @RequestParam(required = false) final @Nullable String floor,
-	                                              @RequestParam(required = false) final @Nullable Integer roomUid,
-	                                              @RequestParam(required = false) final @Nullable String roomName,
-	                                              @RequestParam(required = false) final @Nullable Integer courseUid,
-	                                              @RequestParam(required = false) final @Nullable String courseName) {
+	public @NonNull ResponseEntity<?> getAllRooms(@RequestParam(required = false) final @Nullable String building,
+												  @RequestParam(required = false) final @Nullable String floor,
+												  @RequestParam(required = false) final @Nullable Integer roomUid,
+												  @RequestParam(required = false) final @Nullable String roomName,
+												  @RequestParam(required = false) final @Nullable Integer courseUid,
+												  @RequestParam(required = false) final @Nullable String courseName) {
 		if (null != roomUid && null != roomName) {
 			return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
@@ -98,6 +98,12 @@ public class Controller {
 	}
 
 	@CrossOrigin
+	@GetMapping("/templates/data/{room_uid}")
+	public @NonNull ResponseEntity<?> getAllTemplatesData(@PathVariable("room_uid") final int roomUid) {
+
+	}
+
+	@CrossOrigin
 	@GetMapping("/templates/update")
 	public @NonNull ResponseEntity<?> updateTemplates() {
 		this.templateRepository.readTemplates();
@@ -107,8 +113,8 @@ public class Controller {
 	@CrossOrigin
 	@PatchMapping("/rooms/{room_uid}")
 	public @NonNull ResponseEntity<?> updateRoom(@PathVariable("room_uid") final int roomUid, @RequestBody final int templateUid) {
-		final @NonNull List<Display> displayData = this.displayRepository.findByRoomUid(roomUid);
-		if (displayData.isEmpty()) {
+		final @Nullable List<Display> displayData = this.displayRepository.findByRoomUid(roomUid);
+		if (displayData == null || displayData.isEmpty()) {
 			return new ResponseEntity<>("No display found for '" + roomUid + "'", HttpStatus.NOT_FOUND);
 		}
 
@@ -130,8 +136,8 @@ public class Controller {
 			return new ResponseEntity<>(HttpStatus.OK);
 		}
 
-		final @NonNull List<Display> displays = this.displayRepository.findByRoomUid(roomUid);
-		if (displays.isEmpty()) {
+		final @Nullable List<Display> displays = this.displayRepository.findByRoomUid(roomUid);
+		if (displays == null || displays.isEmpty()) {
 			return new ResponseEntity<>("No displays found", HttpStatus.NOT_FOUND);
 		}
 
@@ -141,7 +147,7 @@ public class Controller {
 			return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		this.displayService.sendImage(display.getDisplayUid(), templateData.get().templatePath());
+		this.displayService.sendImage(display, templateData.get().templatePath());
 		return new ResponseEntity<>(display, HttpStatus.OK);
 	}
 

@@ -29,6 +29,14 @@ const DATA = {
     ]
 };
 
+function getRoomUid() {
+    const idx = document.URL.indexOf('?');
+    if (idx !== -1) {
+        return document.URL.substring(idx + 1, document.URL.length);
+    }
+    return null;
+}
+
 function esc(s) {
     const d = document.createElement('div');
     d.textContent = s ?? '';
@@ -80,3 +88,5 @@ function generateQR(url) {
 
 // MOCK - ersetzen mit: fetch('/api/room/F01-109').then(r => r.json()).then(render);
 render(DATA);
+
+console.log(getRoomUid());

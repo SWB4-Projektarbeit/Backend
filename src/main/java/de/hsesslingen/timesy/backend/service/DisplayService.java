@@ -3,6 +3,7 @@ package de.hsesslingen.timesy.backend.service;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -33,15 +34,15 @@ public class DisplayService {
 				.build();
 	}
 
-	public byte[] capturePng(final @NonNull Path path) {
-		return this.capturePng(path, null);
+	public byte[] capturePng(final @NonNull Path path, final int roomUid) {
+		return this.capturePng(path, roomUid, null);
 	}
 
-	public byte[] capturePng(final @NonNull Path path, final @Nullable Path imagePath) {
+	public byte[] capturePng(final @NonNull Path path, final int roomUid, final @Nullable Path imagePath) {
 		try (final @NonNull Playwright playwright = Playwright.create();
-		     final @NonNull Browser browser = playwright.chromium().launch()) {
+			 final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
-			page.navigate(path.resolve("index.html").toAbsolutePath().normalize().toString().replace("\\", "/"));
+			page.navigate(path.resolve("index.html").toAbsolutePath().normalize().toString().replace("\\", "/").concat("?" + roomUid));
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
@@ -51,7 +52,7 @@ public class DisplayService {
 	}
 
 	public @Nullable String getLocationDTO(final long displayUid) {
-		final @NonNull ResponseEntity<String> responseEntity = this.restClient.get()
+		final @NonNull ResponseEntity<@NotNull String> responseEntity = this.restClient.get()
 				.uri(String.format(LOCATION_DTO_ENDPOINT, displayUid))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
@@ -67,23 +68,23 @@ public class DisplayService {
 		}
 	}
 
-	public void sendImage(final long displayUid, final @NonNull Path path) {
-		this.sendImage(displayUid, path, 2);
+	public void sendImage(final @NonNull Display display, final @NonNull Path path) {
+		this.sendImage(display, path, 2);
 	}
 
-	public void sendImage(final long displayUid, final @NonNull Path path, final int slot) {
+	public void sendImage(final @NonNull Display display, final @NonNull Path path, final int slot) {
 		if (2 > slot || 100 < slot) {
 			log.warn("The slot for the display has to be between 2 and 100, aborting.");
 			return;
 		}
-		final @Nullable String locationDTO = this.getLocationDTO(displayUid);
+		final @Nullable String locationDTO = this.getLocationDTO(display.getDisplayUid());
 		if (null == locationDTO) {
-			log.warn("The locationDTO for '{}' could not be obtained, aborting.", displayUid);
+			log.warn("The locationDTO for '{}' could not be obtained, aborting.", display.getDisplayUid());
 			return;
 		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.post()
-				.uri(String.format(IMAGE_ENDPOINT, displayUid, slot))
-				.body(new ImagePostBody(locationDTO, this.capturePng(path)))
+				.uri(String.format(IMAGE_ENDPOINT, display.getDisplayUid(), slot))
+				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid())))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();

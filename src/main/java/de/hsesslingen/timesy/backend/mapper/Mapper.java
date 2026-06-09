@@ -27,12 +27,12 @@ public class Mapper {
 	private final @NonNull ScheduleEntryMapper scheduleEntryMapper;
 
 	public @Nullable List<BuildingDTO> toBuildingDTOs(final @Nullable List<Appointment> appointments,
-	                                                  final @Nullable String building,
-	                                                  final @Nullable String floor,
-	                                                  final @Nullable Integer roomUid,
-	                                                  final @Nullable String roomName,
-	                                                  final @Nullable Integer courseUid,
-	                                                  final @Nullable String courseName) {
+													  final @Nullable String building,
+													  final @Nullable String floor,
+													  final @Nullable Integer roomUid,
+													  final @Nullable String roomName,
+													  final @Nullable Integer courseUid,
+													  final @Nullable String courseName) {
 		if (null == appointments) {
 			return null;
 		}
