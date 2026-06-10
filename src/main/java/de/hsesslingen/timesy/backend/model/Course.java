@@ -1,5 +1,7 @@
 package de.hsesslingen.timesy.backend.model;
 
+import lombok.NonNull;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -9,17 +11,17 @@ import java.util.Map;
  */
 public record Course(long uid,
 					 boolean blocked,
-					 String courseClassificationKey,
-					 String courseCode,
+					 @NonNull String courseClassificationKey,
+					 @NonNull String courseCode,
 					 int courseIdentityCodeUid,
-					 String courseTypeKey,
+					 @NonNull String courseTypeKey,
 					 float credits,
-					 String formattedCourseCode,
-					 List<Locale> instructionLanguages,
-					 String mainLanguageOfInstruction,
+					 @NonNull String formattedCourseCode,
+					 @NonNull List<Locale> instructionLanguages,
+					 @NonNull String mainLanguageOfInstruction,
 					 long organisationUid,
-					 Map<String, Map<Locale, String>> registrationConfigType,
+					 @NonNull Map<String, Map<Locale, String>> registrationConfigType,
 					 float semesterHours,
-					 String semesterKey,
-					 Map<String, Map<Locale, String>> title) {
+					 @NonNull String semesterKey,
+					 @NonNull Map<String, Map<Locale, String>> title) {
 }

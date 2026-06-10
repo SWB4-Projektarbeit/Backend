@@ -3,14 +3,11 @@ package de.hsesslingen.timesy.backend.dto;
 import lombok.*;
 import org.jetbrains.annotations.Nullable;
 
-@Getter
-@Setter
-@ToString
-@AllArgsConstructor
-@RequiredArgsConstructor
-public class StatusDTO {
-	private final @NonNull Status status;
-	private @Nullable ScheduleEntryDTO successor = null;
+import java.util.List;
+
+public record StatusDTO(
+		@NonNull Status status,
+		@Nullable ScheduleEntryDTO successor) {
 
 	@ToString
 	public enum Status {

@@ -27,8 +27,9 @@ public class RoomMapper {
 			return null;
 		}
 
-		final @NonNull Optional<TemplateRepository.Template> templateData = this.templateRepository.getByUid(display.getTemplateUid());
-		return templateData.map(template -> new RoomDTO(
+		final @NonNull Optional<TemplateRepository.Template> templateOptional = this.templateRepository.getByUid(display.getTemplateUid());
+		// create a new RoomDTO if the templateOptional is present, else return null
+		return templateOptional.map(template -> new RoomDTO(
 				appointment.roomUid(),
 				display.getRoomName(),
 				display.getRoomType(),

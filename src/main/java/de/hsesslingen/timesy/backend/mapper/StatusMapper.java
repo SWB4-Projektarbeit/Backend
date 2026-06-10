@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 public class StatusMapper {
 
 	public @Nullable StatusDTO toStatusDTO(final @Nullable Appointment appointment, final @NonNull ScheduleEntryMapper scheduleEntryMapper) {
-		if (appointment == null) {
+		if (null == appointment) {
 			return null;
 		}
 		try {
 			return new StatusDTO(
 					StatusDTO.Status.valueOf(appointment.statusTypeKey()),
-					appointment.successorUid() == null ? null : scheduleEntryMapper.toScheduleEntryDTO(appointment.successorUid())
+					null == appointment.successorUid() ? null : scheduleEntryMapper.toScheduleEntryDTO(appointment.successorUid())
 			);
 		} catch (final Exception _) {
 			return null;

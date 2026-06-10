@@ -39,21 +39,21 @@ public class Mapper {
 		}
 
 		@NonNull Stream<Appointment> appointmentStream = appointments.stream();
-		if (roomUid != null) {
+		if (null != roomUid) {
 			appointmentStream = appointmentStream.filter(appointment -> appointment.roomUid() == roomUid);
 		}
-		if (courseUid != null) {
+		if (null != courseUid) {
 			appointmentStream = appointmentStream.filter(appointment -> appointment.courseUid() == courseUid);
 		}
-		if (courseName != null) {
+		if (null != courseName) {
 			appointmentStream = appointmentStream.filter(appointment -> {
 				final @Nullable Course course = this.heOnlineService.getCourse(appointment);
-				if (course == null) {
+				if (null == course) {
 					return false;
 				}
 
 				final @Nullable Map<Locale, String> localizedTitles = course.title().get("value");
-				if (localizedTitles == null) {
+				if (null == localizedTitles) {
 					return false;
 				}
 
@@ -61,61 +61,69 @@ public class Mapper {
 			});
 		}
 
+		// Pair up an appointment with the appropriate display
 		@NonNull Stream<Pair<Appointment, Display>> dataStream = appointmentStream.flatMap(
 				appointment -> {
 					final @Nullable List<Display> displays = this.displayRepository.findByRoomUid(appointment.roomUid());
-					if (displays == null || displays.isEmpty()) {
+					if (null == displays || displays.isEmpty()) {
 						return Stream.empty();
 					}
 					return Stream.of(new Pair<>(appointment, displays.getFirst()));
 				}
 		);
-		if (floor != null) {
+		if (null != floor) {
+			// entry = Pair<Appointment, Display>
 			dataStream = dataStream.filter(entry -> {
-				if (entry == null || entry.getValue() == null) {
+				if (null == entry || null == entry.getValue()) {
 					return false;
 				}
 				return Objects.equals(entry.getValue().getFloor(), floor);
 			});
 		}
-		if (roomName != null) {
+		if (null != roomName) {
+			// entry = Pair<Appointment, Display>
 			dataStream = dataStream.filter(entry -> {
-				if (entry == null || entry.getValue() == null) {
+				if (null == entry || null == entry.getValue()) {
 					return false;
 				}
 				return Objects.equals(entry.getValue().getRoomName(), roomName);
 			});
 		}
-		if (building != null) {
+		if (null != building) {
+			// entry = Pair<Appointment, Display>
 			dataStream = dataStream.filter(entry -> {
-				if (entry == null || entry.getValue() == null) {
+				if (null == entry || null == entry.getValue()) {
 					return false;
 				}
 				return Objects.equals(entry.getValue().getBuildingName(), building);
 			});
 		}
-		if (roomType != null) {
+		if (null != roomType) {
+			// entry = Pair<Appointment, Display>
 			dataStream = dataStream.filter(entry -> {
-				if (entry == null || entry.getValue() == null) {
+				if (null == entry || null == entry.getValue()) {
 					return false;
 				}
 				return Objects.equals(entry.getValue().getRoomType(), roomType);
 			});
 		}
 
+		// Map<BuildingName, Map<RoomUID, RoomDTO>>
 		final @NonNull Map<String, Map<Integer, RoomDTO>> buildingDTOs = new HashMap<>();
 		dataStream.forEach(entry -> {
-			if (entry == null || entry.getKey() == null || entry.getValue() == null) {
+			if (null == entry || null == entry.getKey() || null == entry.getValue()) {
 				return;
 			}
 			final @Nullable RoomDTO room = buildingDTOs
+					// if we don't have the building in the map already, add it, else use the value that already exists
 					.computeIfAbsent(entry.getValue().getBuildingName(), _ -> new HashMap<>())
+					// if we don't have the room in the map already, add it
 					.computeIfAbsent(entry.getKey().roomUid(), _ -> this.roomMapper.toRoomDTO(entry.getKey(), entry.getValue()));
-			if (room == null) {
+			if (null == room) {
 				return;
 			}
 			final @Nullable ScheduleEntryDTO scheduleEntry = this.scheduleEntryMapper.toScheduleEntryDTO(entry.getKey());
-			if (scheduleEntry != null) {
+			if (null != scheduleEntry) {
 				room.schedule().add(scheduleEntry);
 			}
 		});
@@ -123,6 +131,7 @@ public class Mapper {
 		return buildingDTOs
 				.entrySet()
 				.stream()
+				// entry = Map<BuildingName, Map<RoomUID, RoomDTO>>
 				.map(entry -> new BuildingDTO(entry.getKey(), new ArrayList<>(entry.getValue().values())))
 				.toList();
 	}

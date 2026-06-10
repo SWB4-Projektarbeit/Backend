@@ -2,6 +2,7 @@ package de.hsesslingen.timesy.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class Display {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long uid;
+	private @Nullable Long uid;
 
 	@Column
 	private long displayUid;
@@ -27,20 +28,20 @@ public class Display {
 	private int templateUid;
 
 	@Column
-	private String roomName;
+	private @NonNull String roomName;
 
 	@Column
-	private String roomType;
+	private @NonNull String roomType;
 
 	@Column
-	private String roomTypeEn;
+	private @NonNull String roomTypeEn;
 
 	@Column
-	private String buildingName;
+	private @NonNull String buildingName;
 
 	@Column
-	private String floor;
+	private @NonNull String floor;
 
 	@Column
-	private List<String> requiredPermissions;
+	private @NonNull List<String> requiredPermissions;
 }

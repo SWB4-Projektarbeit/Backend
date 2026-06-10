@@ -37,14 +37,14 @@ public class TemplateRepository {
 					continue;
 				}
 				final @Nullable File metaDataFile = Arrays.stream(templateFiles).filter(
-						templateFile -> templateFile != null && templateFile.getName().equals("metadata.json")
+						templateFile -> null != templateFile && templateFile.getName().equals("metadata.json")
 				).findFirst().orElse(null);
 				if (null == metaDataFile) {
 					log.info("No metadata.json was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}
 
-				if (Arrays.stream(templateFiles).noneMatch(templateFile -> templateFile != null && templateFile.getName().equals("index.html"))) {
+				if (Arrays.stream(templateFiles).noneMatch(templateFile -> null != templateFile && templateFile.getName().equals("index.html"))) {
 					log.info("No index.html was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}

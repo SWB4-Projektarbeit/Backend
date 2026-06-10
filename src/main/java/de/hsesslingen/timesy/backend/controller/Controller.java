@@ -92,32 +92,6 @@ public class Controller {
 		}
 	}
 
-	@CrossOrigin
-	@GetMapping("/templates")
-	public @NonNull ResponseEntity<?> getAllTemplates() {
-		final @NonNull Collection<TemplateRepository.Template> templates = this.templateRepository.findAll();
-		if (templates.isEmpty()) {
-			return new ResponseEntity<>("No templates found", HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(templates, HttpStatus.OK);
-	}
-
-	@CrossOrigin
-	@GetMapping("/templates/data/{room_uid}")
-	public @NonNull ResponseEntity<?> getTemplateData(@PathVariable("room_uid") final int roomUid) {
-		final @Nullable TemplateDataDTO templateData = this.templateDataMapper.getTemplateDataDTO(roomUid);
-		if (null == templateData) {
-			return new ResponseEntity<>("Error while getting TemplateData", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		return new ResponseEntity<>(templateData, HttpStatus.OK);
-	}
-
-	@CrossOrigin
-	@GetMapping("/templates/update")
-	public @NonNull ResponseEntity<?> updateTemplates() {
-		this.templateRepository.readTemplates();
-		return getAllTemplates();
-	}
 
 	@CrossOrigin
 	@PatchMapping("/rooms/{room_uid}")
@@ -135,6 +109,33 @@ public class Controller {
 		final @NonNull Display display = displayData.getFirst();
 		display.setTemplateUid(templateUid);
 		return new ResponseEntity<>(this.displayRepository.save(display), HttpStatus.OK);
+	}
+
+	@CrossOrigin
+	@GetMapping("/templates")
+	public @NonNull ResponseEntity<?> getAllTemplates() {
+		final @NonNull Collection<TemplateRepository.Template> templates = this.templateRepository.findAll();
+		if (templates.isEmpty()) {
+			return new ResponseEntity<>("No templates found", HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(templates, HttpStatus.OK);
+	}
+
+	@CrossOrigin
+	@GetMapping("/templates/update")
+	public @NonNull ResponseEntity<?> updateTemplates() {
+		this.templateRepository.readTemplates();
+		return getAllTemplates();
+	}	
+
+	@CrossOrigin
+	@GetMapping("/templates/data/{room_uid}")
+	public @NonNull ResponseEntity<?> getTemplateData(@PathVariable("room_uid") final int roomUid) {
+		final @Nullable TemplateDataDTO templateData = this.templateDataMapper.getTemplateDataDTO(roomUid);
+		if (null == templateData) {
+			return new ResponseEntity<>("Error while getting TemplateData for room '" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<>(templateData, HttpStatus.OK);
 	}
 
 	@CrossOrigin

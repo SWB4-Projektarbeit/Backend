@@ -1,19 +1,22 @@
 package de.hsesslingen.timesy.backend.model;
 
+import lombok.NonNull;
+import org.jetbrains.annotations.Nullable;
+
 /**
  * JSON DTO from HE Online API
  */
 public record Appointment(int uid,
-						  String applicationTypeKey,
+                          @NonNull String applicationTypeKey,
 						  int courseGroupUid,
 						  int courseUid,
-						  String endAt,
-						  String eventTypeKey,
+						  @NonNull String endAt,
+						  @NonNull String eventTypeKey,
 						  int externalObjectUid,
 						  int resourceUid,
-						  String resourceUrl,
+						  @NonNull String resourceUrl,
 						  int roomUid,
-						  String startAt,
-						  String statusTypeKey,
-						  Integer successorUid) {
+						  @NonNull String startAt,
+						  @NonNull String statusTypeKey,
+						  @Nullable Integer successorUid) {
 }

@@ -26,11 +26,13 @@ Templates need to have an `index.html` and a `metadata.json` which needs to cont
     - roomName
     - courseUid
     - courseName
+    - roomType
 - ```/rooms/<uid>``` update the template for the given room (patch endpoint)
   - body:
     - templateUid
 - ```/templates``` get all available templates (get endpoint)
 - ```/templates/update``` re-read the template folder and get all available templates (get endpoint)
+- ```/templates/data/<roomUid>``` get the data for the dynamic templates for this specific room (get endpoint)
 - ```/display/update``` force update displays (get endpoint)
   - parameters:
     - roomUid (if not set, all displays will be updated)

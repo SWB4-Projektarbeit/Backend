@@ -25,7 +25,7 @@ public class ScheduleEntryMapper {
 			return null;
 		}
 
-		final @Nullable Map<Locale, String> appointmentNames = getAppointmentNames(appointment);
+		final @Nullable Map<Locale, String> appointmentNames = getAppointmentTitle(appointment);
 		if (null == appointmentNames) {
 			return null;
 		}
@@ -49,7 +49,7 @@ public class ScheduleEntryMapper {
 		return toScheduleEntryDTO(this.heOnlineService.getAppointment(appointmentId));
 	}
 
-	private @Nullable Map<Locale, String> getAppointmentNames(final @Nullable Appointment appointment) {
+	private @Nullable Map<Locale, String> getAppointmentTitle(final @Nullable Appointment appointment) {
 		if (null == appointment) {
 			return null;
 		}

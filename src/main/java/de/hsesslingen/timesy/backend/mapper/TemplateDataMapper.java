@@ -40,7 +40,7 @@ public class TemplateDataMapper {
 				null
 		);
 
-		if (buildingDTOS == null || buildingDTOS.isEmpty()) {
+		if (null == buildingDTOS || buildingDTOS.isEmpty()) {
 			return null;
 		}
 
@@ -92,12 +92,12 @@ public class TemplateDataMapper {
 				return;
 			}
 
-			if (StatusDTO.Status.CANCELLED == scheduleEntry.status().getStatus()) {
+			if (StatusDTO.Status.CANCELLED == scheduleEntry.status().status()) {
 				type = "cancelled";
 			} else if (startTime.before(now) && lastEndTime.get().after(now)) {
 				type = "active";
-			} else if (StatusDTO.Status.RESCHEDULED == scheduleEntry.status().getStatus()) {
-				if (scheduleEntry.status().getSuccessor() != null) {
+			} else if (StatusDTO.Status.RESCHEDULED == scheduleEntry.status().status()) {
+				if (null != scheduleEntry.status().successor()) {
 					List<BuildingDTO> buildings = mapper.toBuildingDTOs(
 							appointments,
 							null,
@@ -108,14 +108,14 @@ public class TemplateDataMapper {
 							null,
 							null
 					);
-					if (buildings != null) {
+					if (null != buildings) {
 						movedTo = buildings
 								.stream()
 								.flatMap(building -> building
 										.rooms()
 										.stream()
 										.flatMap(r -> {
-											if (r.roomUid() != scheduleEntry.status().getSuccessor().roomUid()) {
+											if (r.roomUid() != scheduleEntry.status().successor().roomUid()) {
 												return Stream.empty();
 											}
 											return Stream.of(r.roomName());
@@ -123,7 +123,7 @@ public class TemplateDataMapper {
 					}
 				}
 				type = "rescheduled";
-			} else if (StatusDTO.Status.CONFIRMED == scheduleEntry.status().getStatus()) {
+			} else if (StatusDTO.Status.CONFIRMED == scheduleEntry.status().status()) {
 				type = "booked";
 			} else {
 				type = "unknown";
