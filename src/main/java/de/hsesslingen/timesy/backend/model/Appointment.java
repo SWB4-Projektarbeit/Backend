@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
  * JSON DTO from HE Online API
  */
 public record Appointment(int uid,
-                          @NonNull String applicationTypeKey,
+						  @NonNull String applicationTypeKey,
 						  int courseGroupUid,
 						  int courseUid,
 						  @NonNull String endAt,

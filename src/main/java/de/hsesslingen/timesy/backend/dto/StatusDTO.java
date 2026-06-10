@@ -1,9 +1,8 @@
 package de.hsesslingen.timesy.backend.dto;
 
-import lombok.*;
+import lombok.NonNull;
+import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public record StatusDTO(
 		@NonNull Status status,

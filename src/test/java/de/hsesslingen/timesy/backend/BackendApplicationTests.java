@@ -1,6 +1,5 @@
 package de.hsesslingen.timesy.backend;
 
-import de.hsesslingen.timesy.backend.controller.Controller;
 import de.hsesslingen.timesy.backend.dto.BuildingDTO;
 import de.hsesslingen.timesy.backend.dto.TemplateDataDTO;
 import de.hsesslingen.timesy.backend.model.Appointment;
@@ -9,6 +8,7 @@ import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.repository.DisplayRepository;
 import de.hsesslingen.timesy.backend.repository.TemplateRepository;
 import de.hsesslingen.timesy.backend.service.DisplayService;
+import de.hsesslingen.timesy.backend.service.FrontendService;
 import de.hsesslingen.timesy.backend.service.HEOnlineService;
 import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NoArgsConstructor;
@@ -34,8 +34,8 @@ import java.util.List;
 class BackendApplicationTests {
 
 	@BeforeAll
-	static void initDB(@Autowired final @NonNull Controller controller) {
-		controller.createDummyData();
+	static void initDB(@Autowired final @NonNull FrontendService frontendService) {
+		frontendService.createDummyData();
 	}
 
 	@BeforeAll
@@ -118,14 +118,14 @@ class BackendApplicationTests {
 	@Test
 	@Order(4)
 	public void mappper(@Autowired final @NonNull DisplayRepository displayRepository,
-						@Autowired final @NonNull Controller controller) {
+						@Autowired final @NonNull FrontendService frontendService) {
 		System.out.println("[Test] Mapper - Displays");
 		for (final @NonNull Display display : displayRepository.findAll()) {
 			System.out.println("    - " + display);
 		}
 		System.out.println();
 
-		final @NonNull ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, null, null, null, null, null);
+		final @NonNull ResponseEntity<?> buildingEntity = frontendService.getAllRooms(null, null, null, null, null, null, null);
 		Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
 		Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
 		//noinspection unchecked
@@ -141,11 +141,11 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(5)
-	public void updateTemplate(@Autowired final @NonNull Controller controller,
+	public void updateTemplate(@Autowired final @NonNull FrontendService frontendService,
 							   @Autowired final @NonNull TemplateRepository templateRepository) {
 		templateRepository.readTemplates();
-		controller.updateRoom(6976, 124);
-		final @NonNull ResponseEntity<?> buildingEntity = controller.getAllRooms(null, null, 6976, null, null, null, null);
+		frontendService.updateRoom(6976, 124);
+		final @NonNull ResponseEntity<?> buildingEntity = frontendService.getAllRooms(null, null, 6976, null, null, null, null);
 		Assertions.assertEquals(HttpStatus.OK, buildingEntity.getStatusCode());
 		Assertions.assertInstanceOf(List.class, buildingEntity.getBody());
 		//noinspection unchecked
@@ -157,10 +157,10 @@ class BackendApplicationTests {
 
 	@Test
 	@Order(6)
-	public void getTemplateData(@Autowired final @NonNull Controller controller,
+	public void getTemplateData(@Autowired final @NonNull FrontendService frontendService,
 								@Autowired final @NonNull TemplateRepository templateRepository) {
 		templateRepository.readTemplates();
-		final @NonNull ResponseEntity<?> templateDataEntity = controller.getTemplateData(6976);
+		final @NonNull ResponseEntity<?> templateDataEntity = frontendService.getTemplateData(6976);
 		Assertions.assertEquals(HttpStatus.OK, templateDataEntity.getStatusCode());
 		Assertions.assertInstanceOf(TemplateDataDTO.class, templateDataEntity.getBody());
 		final @NonNull TemplateDataDTO templateData = (TemplateDataDTO) templateDataEntity.getBody();
