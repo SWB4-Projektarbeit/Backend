@@ -4,6 +4,8 @@ Set the templates folder in application.properties. <br>
 Initially run ```mvn clean verify -U``` to verify all dependencies get installed. <br>
 Then use ```mvn spring-boot:run``` to run the Backend.
 
+```npx playwright install-deps```
+
 ## Run:
 The HeOnline mock needs to be running as well: https://github.com/SWB4-Projektarbeit/HE-Online-Mock
 

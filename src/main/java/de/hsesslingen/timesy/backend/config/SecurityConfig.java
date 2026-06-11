@@ -23,9 +23,6 @@ public class SecurityConfig {
 	@Value("${keycloak.url}")
 	private String keycloakUrl;
 
-	@Value("${spring-cloud.gateway}")
-	private String gateway;
-
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
@@ -47,8 +44,7 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(List.of(
-				this.keycloakUrl,  // Keycloak
-				this.gateway // Spring Cloud Gateway
+				this.keycloakUrl  // Keycloak
 		));
 		config.setAllowedHeaders(List.of("*"));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

@@ -43,11 +43,12 @@ public class DisplayService {
 		try (final @NonNull Playwright playwright = Playwright.create();
 			 final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
-			page.navigate(path
-					.resolve("index.html")
-					.toAbsolutePath()
-					.normalize()
-					.toString()
+			page.navigate("file://"
+					.concat(
+							path.resolve("index.html")
+									.toAbsolutePath()
+									.normalize()
+									.toString())
 					.replace("\\", "/")
 					.concat("?http://localhost:" + port + "/api-timesy/templates/data/" + roomUid));
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
