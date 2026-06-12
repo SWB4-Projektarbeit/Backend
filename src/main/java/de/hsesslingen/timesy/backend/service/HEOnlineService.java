@@ -11,11 +11,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static org.springframework.security.oauth2.client.web.ClientAttributes.clientRegistrationId;
 
 
 @Slf4j
@@ -34,12 +38,15 @@ public class HEOnlineService {
 	private final @NonNull RestClient restClient;
 	private final @NonNull String heOnlineUrl;
 
-	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl) {
+	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl, final @NonNull OAuth2AuthorizedClientManager authorizedClientManager) {
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
+		final OAuth2ClientHttpRequestInterceptor requestInterceptor =
+				new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
 		this.heOnlineUrl = heOnlineUrl;
-		this.restClient = RestClient.builder()
+		this.restClient = RestClient
+				.builder()
+				.requestInterceptor(requestInterceptor)
 				.build();
-		// TODO: Cookies for KeyCloak instance!
 	}
 
 	public @Nullable Appointment getAppointment(final int appointmentId) {
@@ -57,6 +64,7 @@ public class HEOnlineService {
 	public @Nullable List<Appointment> getAppointments() {
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
+				.attributes(clientRegistrationId("he-online"))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -83,6 +91,7 @@ public class HEOnlineService {
 	public @Nullable Course getCourse(final Appointment appointment) {
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
+				.attributes(clientRegistrationId("he-online"))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -108,6 +117,7 @@ public class HEOnlineService {
 	public @Nullable List<Course> getCourses() {
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSES_ENDPOINT)
+				.attributes(clientRegistrationId("he-online"))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();

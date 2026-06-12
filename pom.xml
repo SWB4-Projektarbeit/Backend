@@ -1,119 +1,119 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.6</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>de.hsesslinge.timesy</groupId>
-	<artifactId>backend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.0.6</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>de.hsesslinge.timesy</groupId>
+    <artifactId>backend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <name>TimeSy-Backend</name>
-	<description/>
-	<url/>
+    <description/>
+    <url/>
 
-	<licenses>
-		<license>
-			<name>GNU GENERAL PUBLIC LICENSE</name>
-			<url>https://github.com/SWB4-Projektarbeit/Backend/blob/main/LICENSE</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE</name>
+            <url>https://github.com/SWB4-Projektarbeit/Backend/blob/main/LICENSE</url>
+        </license>
+    </licenses>
 
-	<developers>
-		<developer>
-			<id>VinzenzHassert</id>
-			<name>Vinzenz Hassert</name>
-			<email>vinzenz.hassert@t-online.de</email>
-			<url>https://github.com/Zeanon</url>
-			<roles>
-				<role>Backend</role>
-			</roles>
-			<timezone>Germany</timezone>
-		</developer>
+    <developers>
+        <developer>
+            <id>VinzenzHassert</id>
+            <name>Vinzenz Hassert</name>
+            <email>vinzenz.hassert@t-online.de</email>
+            <url>https://github.com/Zeanon</url>
+            <roles>
+                <role>Backend</role>
+            </roles>
+            <timezone>Germany</timezone>
+        </developer>
 
-		<developer>
-			<id>NickHill</id>
-			<name>Nick Hill</name>
-			<email>nihiit01@hs-esslingen.de</email>
-			<url>https://github.com/NickDamonHill</url>
-			<roles>
-				<role>Frontend</role>
-			</roles>
-			<timezone>Germany</timezone>
-		</developer>
+        <developer>
+            <id>NickHill</id>
+            <name>Nick Hill</name>
+            <email>nihiit01@hs-esslingen.de</email>
+            <url>https://github.com/NickDamonHill</url>
+            <roles>
+                <role>Frontend</role>
+            </roles>
+            <timezone>Germany</timezone>
+        </developer>
 
-		<developer>
-			<id>NiklasPlecevic</id>
-			<name>Niklas Plecevic</name>
-			<email>nipliit00@hs-esslingen.de</email>
-			<url>https://github.com/Niklas-1999</url>
-			<roles>
-				<role>Frontend</role>
-			</roles>
-			<timezone>Germany</timezone>
-		</developer>
+        <developer>
+            <id>NiklasPlecevic</id>
+            <name>Niklas Plecevic</name>
+            <email>nipliit00@hs-esslingen.de</email>
+            <url>https://github.com/Niklas-1999</url>
+            <roles>
+                <role>Frontend</role>
+            </roles>
+            <timezone>Germany</timezone>
+        </developer>
 
-		<developer>
-			<id>SaschaMorbitzer</id>
-			<name>Sascha Morbitzer</name>
-			<email>samoit00@hs-esslingen.de</email>
-			<url>https://github.com/Phlox42</url>
-			<roles>
-				<role>Frontend</role>
-			</roles>
-			<timezone>Germany</timezone>
-		</developer>
-	</developers>
+        <developer>
+            <id>SaschaMorbitzer</id>
+            <name>Sascha Morbitzer</name>
+            <email>samoit00@hs-esslingen.de</email>
+            <url>https://github.com/Phlox42</url>
+            <roles>
+                <role>Frontend</role>
+            </roles>
+            <timezone>Germany</timezone>
+        </developer>
+    </developers>
 
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
 
-	<properties>
-		<java.version>25</java.version>
-		<maven.compiler.release>25</maven.compiler.release>
-		<maven.compiler.target>25</maven.compiler.target>
+    <properties>
+        <java.version>25</java.version>
+        <maven.compiler.release>25</maven.compiler.release>
+        <maven.compiler.target>25</maven.compiler.target>
 
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <storagemanager.version>1.1.105</storagemanager.version>
         <storagemanager.core.version>${storagemanager.version}</storagemanager.core.version>
         <storagemanager.json.version>${storagemanager.version}</storagemanager.json.version>
-	</properties>
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.46</version>
-			<scope>provided</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.46</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webmvc-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
@@ -123,13 +123,19 @@
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
             <version>4.1.0-RC1</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-client</artifactId>
+            <version>7.1.0</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
             <version>42.7.11</version>
             <scope>test</scope>
-		</dependency>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -142,13 +148,13 @@
             <scope>runtime</scope>
         </dependency>
 
-		<!-- JetBrains -->
-		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>17.0.0</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- JetBrains -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>17.0.0</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- StorageManager by Zeanon-->
         <dependency>
@@ -165,15 +171,15 @@
             <scope>compile</scope>
         </dependency>
 
-		<dependency>
-			<groupId>com.microsoft.playwright</groupId>
-			<artifactId>playwright</artifactId>
-			<version>1.59.0</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>1.59.0</version>
+        </dependency>
+    </dependencies>
 
-	<build>
-        <defaultGoal>spring-boot:run</defaultGoal>
+    <build>
+        <defaultGoal>clean verify -U</defaultGoal>
         <finalName>${project.name}</finalName>
 
         <resources>
@@ -182,26 +188,26 @@
             </resource>
         </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.15.0	</version>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-							<version>1.18.46</version>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
 
             <!-- Install Plugin -->
             <plugin>
@@ -270,6 +276,6 @@
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 </project>

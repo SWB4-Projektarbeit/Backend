@@ -23,7 +23,7 @@ public class TemplateRepository {
 
 	public TemplateRepository(@Value("${templates.folder}") final @NonNull String templatesFolder) {
 		this.templatesFolder = templatesFolder;
-		readTemplates();
+		this.readTemplates();
 	}
 
 	public void readTemplates() {
@@ -84,7 +84,7 @@ public class TemplateRepository {
 
 
 	public record Template(int templateUid,
-						   String templateName,
-						   Path templatePath) {
+	                       String templateName,
+	                       Path templatePath) {
 	}
 }

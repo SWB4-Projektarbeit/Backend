@@ -41,7 +41,7 @@ public class DisplayService {
 
 	public byte[] capturePng(final @NonNull Path path, final int roomUid, final @Nullable Path imagePath) {
 		try (final @NonNull Playwright playwright = Playwright.create();
-			 final @NonNull Browser browser = playwright.chromium().launch()) {
+		     final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
 			page.navigate("file://"
 					.concat(
@@ -50,7 +50,7 @@ public class DisplayService {
 									.normalize()
 									.toString())
 					.replace("\\", "/")
-					.concat("?http://localhost:" + port + "/api-timesy/templates/data/" + roomUid));
+					.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid));
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
