@@ -2,6 +2,7 @@ package de.hsesslingen.timesy.backend.service;
 
 import de.hsesslingen.timesy.backend.model.Appointment;
 import de.hsesslingen.timesy.backend.model.Course;
+import de.hsesslingen.timesy.backend.security.KeycloakClient;
 import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -11,11 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.web.client.OAuth2ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -36,17 +36,25 @@ public class HEOnlineService {
 	};
 
 	private final @NonNull RestClient restClient;
+	private final @NonNull KeycloakClient keycloakClient;
 	private final @NonNull String heOnlineUrl;
 
-	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl, final @NonNull OAuth2AuthorizedClientManager authorizedClientManager) {
+	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl,
+						   @Value("${heonline-keycloak.url}") final @NonNull String keycloakUrl,
+						   @Value("${heonline-keycloak.realm}") final @NonNull String keycloakRealm,
+						   @Value("${heonline-keycloak.client-id}") final @NonNull String keycloakClientID,
+						   @Value("${heonline-keycloak.client-secret}") final @NonNull String keycloakClientSecret) {
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
-		final OAuth2ClientHttpRequestInterceptor requestInterceptor =
-				new OAuth2ClientHttpRequestInterceptor(authorizedClientManager);
 		this.heOnlineUrl = heOnlineUrl;
 		this.restClient = RestClient
 				.builder()
-				.requestInterceptor(requestInterceptor)
 				.build();
+
+		this.keycloakClient = new KeycloakClient(
+				keycloakUrl,
+				keycloakRealm,
+				keycloakClientID,
+				keycloakClientSecret);
 	}
 
 	public @Nullable Appointment getAppointment(final int appointmentId) {
@@ -62,12 +70,20 @@ public class HEOnlineService {
 	}
 
 	public @Nullable List<Appointment> getAppointments() {
+		KeycloakClient.TokenCollection tokens;
+		try {
+			tokens = keycloakClient.getTokens();
+		} catch (final @NonNull IOException e) {
+            throw new RuntimeException(e);
+        }
+
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + APPOINTMENTS_ENDPOINT)
-				.attributes(clientRegistrationId("he-online"))
+				.header("Authorization", "Bearer " + tokens.getAccessToken())
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
+		System.out.println(response.toEntity(String.class));
 
 		final @NonNull ResponseEntity<@NotNull List<Appointment>> responseEntity;
 		try {
@@ -83,15 +99,21 @@ public class HEOnlineService {
 
 		try {
 			return responseEntity.getBody();
-		} catch (final Exception e) {
+		} catch (final @NonNull Exception e) {
 			return null;
 		}
 	}
 
 	public @Nullable Course getCourse(final Appointment appointment) {
+		KeycloakClient.TokenCollection tokens;
+		try {
+			tokens = keycloakClient.getTokens();
+		} catch (final @NonNull IOException _) {
+			return null;
+		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSE_ENDPOINT, appointment.courseUid())
-				.attributes(clientRegistrationId("he-online"))
+				.header("Authorization", "Bearer " + tokens.getAccessToken())
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -115,9 +137,15 @@ public class HEOnlineService {
 	}
 
 	public @Nullable List<Course> getCourses() {
+		KeycloakClient.TokenCollection tokens;
+		try {
+			tokens = keycloakClient.getTokens();
+		} catch (final @NonNull IOException _) {
+			return null;
+		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + COURSES_ENDPOINT)
-				.attributes(clientRegistrationId("he-online"))
+				.header("Authorization", "Bearer " + tokens.getAccessToken())
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();

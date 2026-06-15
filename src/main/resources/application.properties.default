@@ -8,7 +8,7 @@ server.port=8215
 # spring.jpa.show-sql=true
 
 # add your folder for templates, example templates are in test/resources/templates, so add the path to that folder here
-templates.folder=""
+templates.folder=/home/user/SWT_Project/Backend/src/test/resources/templates
 heonline.url=http://127.0.0.1:8081
 displayserver.url=127.0.0.1:8082
 
@@ -25,10 +25,16 @@ spring.datasource.username=sa
 spring.datasource.password=password
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 
-# Security for our application
+# Keycloak HE-Online
+# <url>/auth
+heonline-keycloak.url=http://127.0.0.1:8080
+heonline-keycloak.realm=swt-projekt
+heonline-keycloak.client-id=swt-project-bff
+heonline-keycloak.client-secret=""
+
+# Keycloak to protect the backend with
 # provide the proper client-name
-keycloak.url=127.0.0.1:8080
-spring.security.oauth2.client.registration.swt-project-bff.provider=keycloak-local
+spring.security.oauth2.client.registration.swt-project-bff.provider=keycloak
 spring.security.oauth2.client.registration.swt-project-bff.client-id=swt-project-bff
 spring.security.oauth2.client.registration.swt-project-bff.client-secret=""
 spring.security.oauth2.client.registration.swt-project-bff.authorization-grant-type=authorization_code
@@ -36,12 +42,11 @@ spring.security.oauth2.client.registration.swt-project-bff.scope=openid,profile
 spring.security.oauth2.client.registration.swt-project-bff.redirect-uri={baseUrl}/login/oauth2/code/swt-project-bff
 spring.security.oauth2.client.registration.swt-project-bff.client-name="SWT-Projekt BFF"
 spring.security.oauth2.client.registration.swt-project-bff.client-authentication-method=client_secret_basic
-spring.security.oauth2.client.provider.keycloak-local.issuer-uri=http://localhost:8080/realms/swt-projekt
-spring.security.oauth2.client.provider.keycloak-local.user-name-attribute=preferred_username
+spring.security.oauth2.client.provider.keycloak.issuer-uri=http://localhost:8080/realms/swt-projekt
+spring.security.oauth2.client.provider.keycloak.user-name-attribute=preferred_username
 
 # HeOnline credentials
-spring.security.oauth2.client.registration.he-online.provider=keycloak-heonline
-spring.security.oauth2.client.registration.he-online.client-id=""
+spring.security.oauth2.client.registration.he-online.provider=keycloak
+spring.security.oauth2.client.registration.he-online.client-id=swt-project-bff
 spring.security.oauth2.client.registration.he-online.client-secret=""
-spring.security.oauth2.client.registration.he-online.authorization-grant-type=authorization_code
-spring.security.oauth2.client.provider.keycloak-he-online.token-uri=""
+spring.security.oauth2.client.registration.he-online.authorization-grant-type=client_credentials

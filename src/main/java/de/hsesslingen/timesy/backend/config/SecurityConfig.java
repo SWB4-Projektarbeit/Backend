@@ -20,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	@Value("${keycloak.url}")
+	@Value("${heonline-keycloak.url}")
 	private String keycloakUrl;
 
 	@Bean
