@@ -22,11 +22,14 @@ import java.nio.file.Path;
 @Service
 public class DisplayService {
 
-	public static final @NonNull String LOCATION_DTO_ENDPOINT = "/api/location/%d";
-	public static final @NonNull String IMAGE_ENDPOINT = "/api/location/%d/mem_combo/%d";
-	private final @NonNull RestClient restClient;
+	@Value("${displayserver.location-dto-endpoint}")
+	private @NonNull String locationDtoEndpoint;
+	@Value("${displayserver.image-endpoint}")
+	private @NonNull String imageEndpoint;
 	@Value("${server.port}")
 	private int port;
+
+	private final @NonNull RestClient restClient;
 
 	public DisplayService(@Value("${displayserver.url}") final String displayServerUrl) {
 		Utils.validateUrl(displayServerUrl, "DisplayServer");
@@ -61,7 +64,7 @@ public class DisplayService {
 
 	public @Nullable String getLocationDTO(final long displayUid) {
 		final @NonNull ResponseEntity<@NotNull String> responseEntity = this.restClient.get()
-				.uri(String.format(LOCATION_DTO_ENDPOINT, displayUid))
+				.uri(this.locationDtoEndpoint, displayUid)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve()
@@ -91,7 +94,7 @@ public class DisplayService {
 			return;
 		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.post()
-				.uri(String.format(IMAGE_ENDPOINT, display.getDisplayUid(), slot))
+				.uri(this.imageEndpoint, display.getDisplayUid(), slot)
 				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid())))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
