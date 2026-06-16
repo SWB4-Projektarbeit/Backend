@@ -19,6 +19,16 @@ public class Controller {
 	private final @NonNull FrontendService frontendService;
 
 	@CrossOrigin
+	@GetMapping("/login")
+	public @NonNull ResponseEntity<?> login(
+			@AuthenticationPrincipal final @Nullable OidcUser user) {
+		if (user == null) {
+			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+		}
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+	}
+
+	@CrossOrigin
 	@GetMapping("/rooms")
 	public @NonNull ResponseEntity<?> getAllRooms(
 			@AuthenticationPrincipal final @Nullable OidcUser user,
@@ -48,7 +58,7 @@ public class Controller {
 			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
 		}
 
-		return frontendService.updateRoom(roomUid, templateUid);
+		return this.frontendService.updateRoom(roomUid, templateUid);
 	}
 
 	@CrossOrigin
