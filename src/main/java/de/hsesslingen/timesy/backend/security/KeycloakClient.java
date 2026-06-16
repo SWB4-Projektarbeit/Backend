@@ -118,6 +118,4 @@ public final class KeycloakClient {
         @JsonProperty("scope")
         String scope;
     }
-
-
 }
