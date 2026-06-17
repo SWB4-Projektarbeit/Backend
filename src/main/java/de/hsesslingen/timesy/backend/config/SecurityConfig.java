@@ -31,10 +31,11 @@ public class SecurityConfig {
 								.requestMatchers("/actuator/**").permitAll()
 								.anyRequest().authenticated()
 				)
-				.oauth2Login(Customizer.withDefaults())  // Enables OAuth2 login
-				.oauth2Client(Customizer.withDefaults()) // Enables OAuth2 client
-				.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for APIs
-				.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable CORS
+				.oauth2Login(Customizer.withDefaults())
+				.oauth2Client(Customizer.withDefaults())
+				.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+				.csrf(AbstractHttpConfigurer::disable)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
 		return http.build();
 	}
@@ -44,10 +45,11 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
 		config.setAllowedOrigins(List.of(
-				this.keycloakUrl  // Keycloak
+				"http://localhost:4200",  // Angular dev server
+				this.keycloakUrl          // Keycloak
 		));
 		config.setAllowedHeaders(List.of("*"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", config);

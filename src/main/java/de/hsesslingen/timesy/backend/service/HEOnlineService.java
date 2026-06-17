@@ -93,7 +93,6 @@ public class HEOnlineService {
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
-		System.out.println(response.toEntity(String.class));
 
 		final @NonNull ResponseEntity<@NotNull List<Appointment>> responseEntity;
 		try {
