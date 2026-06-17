@@ -25,7 +25,7 @@ public class Controller {
 		if (user == null) {
 			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
 		}
-		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		return new ResponseEntity<>("Logged in", HttpStatus.OK);
 	}
 
 	@CrossOrigin
