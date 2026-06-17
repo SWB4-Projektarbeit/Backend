@@ -4,12 +4,15 @@ import de.hsesslingen.timesy.backend.service.FrontendService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 
 @Component
 @RestController
@@ -21,9 +24,16 @@ public class Controller {
 	@CrossOrigin
 	@GetMapping("/login")
 	public @NonNull ResponseEntity<?> login(
-			@AuthenticationPrincipal final @Nullable OidcUser user) {
+			@AuthenticationPrincipal final @Nullable OidcUser user,
+			@RequestParam(required = false, name = "redirect_uri") final @Nullable String redirectUri) {
 		if (user == null) {
 			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+		}
+		if (redirectUri != null) {
+			return ResponseEntity
+					.status(HttpStatus.FOUND)
+					.header(HttpHeaders.LOCATION, redirectUri)
+					.body("Logged in");
 		}
 		return new ResponseEntity<>("Logged in", HttpStatus.OK);
 	}
