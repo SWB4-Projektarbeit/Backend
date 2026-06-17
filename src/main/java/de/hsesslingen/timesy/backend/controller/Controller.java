@@ -4,6 +4,7 @@ import de.hsesslingen.timesy.backend.service.FrontendService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,9 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RequestMapping("/api-timesy")
 public class Controller {
+
+	@Value("${heonline.keycloak.url}")
+	private String keycloakUrl;
 	private final @NonNull FrontendService frontendService;
 
 	@CrossOrigin
@@ -37,7 +41,7 @@ public class Controller {
 		}
 		return new ResponseEntity<>("Logged in", HttpStatus.OK);
 	}
-
+	
 	@CrossOrigin
 	@GetMapping("/rooms")
 	public @NonNull ResponseEntity<?> getAllRooms(

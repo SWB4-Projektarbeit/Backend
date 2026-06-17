@@ -19,11 +19,6 @@ import java.util.List;
 import static java.util.Arrays.asList;
 
 
-/**
- * This code is very simple.
- * Based upon this article : https://github.com/wpic/sample-keycloak-getting-token
- *
- */
 @AllArgsConstructor
 public final class KeycloakClient {
 
@@ -38,7 +33,6 @@ public final class KeycloakClient {
     }
 
     public TokenCollection getTokens() throws IOException {
-        System.out.println(getTokenEndpoint());
         HttpPost post = new HttpPost(getTokenEndpoint());
         List<NameValuePair> params = asList(
                 new BasicNameValuePair("grant_type", "client_credentials"),
@@ -52,11 +46,8 @@ public final class KeycloakClient {
             return httpclient.execute(post, response -> {
                 ObjectMapper mapper = new ObjectMapper();
                 int status = response.getStatusLine().getStatusCode();
-                System.out.println(status);
                 if (status >= 200 && status < 300) {
-                    TokenCollection result = mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
-                    System.out.println(result);
-                    return result;
+                    return mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
                 } else {
                     throw new ClientProtocolException("Unexpected response status: " + status);
                 }
