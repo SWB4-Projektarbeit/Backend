@@ -13,17 +13,15 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-
 @Component
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api-timesy")
 public class Controller {
 
+	private final @NonNull FrontendService frontendService;
 	@Value("${heonline.keycloak.url}")
 	private String keycloakUrl;
-	private final @NonNull FrontendService frontendService;
 
 	@CrossOrigin
 	@GetMapping("/login")
@@ -41,7 +39,7 @@ public class Controller {
 		}
 		return new ResponseEntity<>("Logged in", HttpStatus.OK);
 	}
-	
+
 	@CrossOrigin
 	@GetMapping("/rooms")
 	public @NonNull ResponseEntity<?> getAllRooms(

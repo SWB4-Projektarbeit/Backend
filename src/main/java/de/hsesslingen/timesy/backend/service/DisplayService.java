@@ -22,14 +22,13 @@ import java.nio.file.Path;
 @Service
 public class DisplayService {
 
+	private final @NonNull RestClient restClient;
 	@Value("${displayserver.location-dto-endpoint}")
 	private @NonNull String locationDtoEndpoint;
 	@Value("${displayserver.image-endpoint}")
 	private @NonNull String imageEndpoint;
 	@Value("${server.port}")
 	private int port;
-
-	private final @NonNull RestClient restClient;
 
 	public DisplayService(@Value("${displayserver.url}") final String displayServerUrl) {
 		Utils.validateUrl(displayServerUrl, "DisplayServer");
@@ -44,7 +43,7 @@ public class DisplayService {
 
 	public byte[] capturePng(final @NonNull Path path, final int roomUid, final @Nullable Path imagePath) {
 		try (final @NonNull Playwright playwright = Playwright.create();
-		     final @NonNull Browser browser = playwright.chromium().launch()) {
+			 final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
 			page.navigate("file://"
 					.concat(

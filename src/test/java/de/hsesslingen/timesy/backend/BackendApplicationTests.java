@@ -66,8 +66,8 @@ class BackendApplicationTests {
 	@Test
 	@Order(1)
 	void checkProperties(@Value("${heonline.url}") final @NonNull String heOnlineUrl,
-	                     @Value("${displayserver.url}") final @NonNull String displayServerUrl,
-	                     @Value("${templates.folder}") final @NonNull String templatesFolder) {
+						 @Value("${displayserver.url}") final @NonNull String displayServerUrl,
+						 @Value("${templates.folder}") final @NonNull String templatesFolder) {
 		System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
 		Assertions.assertNotEquals("\"\"", heOnlineUrl);
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
@@ -99,7 +99,7 @@ class BackendApplicationTests {
 	@Test
 	@Order(3)
 	void templateLoads(@Autowired final @NonNull TemplateRepository repository,
-	                   @Autowired final @NonNull DisplayService displayService) {
+					   @Autowired final @NonNull DisplayService displayService) {
 		repository.readTemplates();
 		final @NonNull Collection<TemplateRepository.Template> templates = repository.findAll();
 		if (templates.isEmpty()) {
@@ -118,7 +118,7 @@ class BackendApplicationTests {
 	@Test
 	@Order(4)
 	public void mappper(@Autowired final @NonNull DisplayRepository displayRepository,
-	                    @Autowired final @NonNull FrontendService frontendService) {
+						@Autowired final @NonNull FrontendService frontendService) {
 		System.out.println("[Test] Mapper - Displays");
 		for (final @NonNull Display display : displayRepository.findAll()) {
 			System.out.println("    - " + display);
@@ -142,7 +142,7 @@ class BackendApplicationTests {
 	@Test
 	@Order(5)
 	public void updateTemplate(@Autowired final @NonNull FrontendService frontendService,
-	                           @Autowired final @NonNull TemplateRepository templateRepository) {
+							   @Autowired final @NonNull TemplateRepository templateRepository) {
 		templateRepository.readTemplates();
 		frontendService.updateRoom(6976, 124);
 		final @NonNull ResponseEntity<?> buildingEntity = frontendService.getAllRooms(null, null, 6976, null, null, null, null);
@@ -158,7 +158,7 @@ class BackendApplicationTests {
 	@Test
 	@Order(6)
 	public void getTemplateData(@Autowired final @NonNull FrontendService frontendService,
-	                            @Autowired final @NonNull TemplateRepository templateRepository) {
+								@Autowired final @NonNull TemplateRepository templateRepository) {
 		templateRepository.readTemplates();
 		final @NonNull ResponseEntity<?> templateDataEntity = frontendService.getTemplateData(6976);
 		Assertions.assertEquals(HttpStatus.OK, templateDataEntity.getStatusCode());

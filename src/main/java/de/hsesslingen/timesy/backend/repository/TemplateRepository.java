@@ -84,7 +84,7 @@ public class TemplateRepository {
 
 
 	public record Template(int templateUid,
-	                       String templateName,
-	                       Path templatePath) {
+						   String templateName,
+						   Path templatePath) {
 	}
 }

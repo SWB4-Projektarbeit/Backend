@@ -9,6 +9,7 @@ server.port=8215
 
 # add your folder for templates, example templates are in test/resources/templates, so add the path to that folder here
 templates.folder=""
+frontend.url=""
 displayserver.url=127.0.0.1:8082
 displayserver.location-dto-endpoint=/api/location/{id}
 displayserver.image-endpoint="/api/location/{id}/mem_combo/{slot}"

@@ -37,9 +37,9 @@ public class HEOnlineService {
 	private final @NonNull KeycloakClient keycloakClient;
 
 	public HEOnlineService(@Value("${heonline.url}") final @NonNull String heOnlineUrl,
-	                       @Value("${heonline.course-endpoint}") final @NonNull String courseEndpoint,
-	                       @Value("${heonline.courses-endpoint}") final @NonNull String coursesEndpoint,
-	                       @Value("${heonline.appointments-endpoint}") final @NonNull String appointmentsEndpoint,
+						   @Value("${heonline.course-endpoint}") final @NonNull String courseEndpoint,
+						   @Value("${heonline.courses-endpoint}") final @NonNull String coursesEndpoint,
+						   @Value("${heonline.appointments-endpoint}") final @NonNull String appointmentsEndpoint,
 						   @Value("${heonline.keycloak.url}") final @NonNull String keycloakUrl,
 						   @Value("${heonline.keycloak.realm}") final @NonNull String keycloakRealm,
 						   @Value("${heonline.keycloak.client-id}") final @NonNull String keycloakClientID,
@@ -85,7 +85,7 @@ public class HEOnlineService {
 		} catch (final @NonNull IOException e) {
 			log.error(e.getMessage());
 			return null;
-        }
+		}
 
 		final @NonNull RestClient.ResponseSpec response = this.restClient.get()
 				.uri(this.heOnlineUrl + "/" + this.appointmentsEndpoint)
@@ -175,7 +175,7 @@ public class HEOnlineService {
 		}
 
 		if (200 != responseEntity.getStatusCode().value()) {
-            log.error("Response was '{}'", responseEntity.getStatusCode().value());
+			log.error("Response was '{}'", responseEntity.getStatusCode().value());
 			return null;
 		}
 

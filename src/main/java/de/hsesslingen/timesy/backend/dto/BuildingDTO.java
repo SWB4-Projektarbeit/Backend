@@ -5,5 +5,5 @@ import lombok.NonNull;
 import java.util.List;
 
 public record BuildingDTO(@NonNull String buildingName,
-                          @NonNull List<RoomDTO> rooms) {
+						  @NonNull List<RoomDTO> rooms) {
 }

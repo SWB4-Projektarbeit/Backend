@@ -22,91 +22,91 @@ import static java.util.Arrays.asList;
 @AllArgsConstructor
 public final class KeycloakClient {
 
-    private String serverUrl;
-    private String realm;
-    private String clientId;
-    private String clientSecret;
+	private String serverUrl;
+	private String realm;
+	private String clientId;
+	private String clientSecret;
 
 
-    private String getTokenEndpoint() {
-        return serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
-    }
+	private String getTokenEndpoint() {
+		return serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+	}
 
-    public TokenCollection getTokens() throws IOException {
-        HttpPost post = new HttpPost(getTokenEndpoint());
-        List<NameValuePair> params = asList(
-                new BasicNameValuePair("grant_type", "client_credentials"),
-                new BasicNameValuePair("client_id", clientId),
-                new BasicNameValuePair("client_secret", clientSecret)
-        );
+	public TokenCollection getTokens() throws IOException {
+		HttpPost post = new HttpPost(getTokenEndpoint());
+		List<NameValuePair> params = asList(
+				new BasicNameValuePair("grant_type", "client_credentials"),
+				new BasicNameValuePair("client_id", clientId),
+				new BasicNameValuePair("client_secret", clientSecret)
+		);
 
-        post.setEntity(new UrlEncodedFormEntity(params));
+		post.setEntity(new UrlEncodedFormEntity(params));
 
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
-            return httpclient.execute(post, response -> {
-                ObjectMapper mapper = new ObjectMapper();
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    return mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            });
-        }
-    }
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			return httpclient.execute(post, response -> {
+				ObjectMapper mapper = new ObjectMapper();
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					return mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
+				} else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
+				}
+			});
+		}
+	}
 
-    public TokenCollection refreshTokens(String refreshToken) throws IOException {
+	public TokenCollection refreshTokens(String refreshToken) throws IOException {
 
-        HttpPost post = new HttpPost(getTokenEndpoint());
-        List<NameValuePair> params = asList(new BasicNameValuePair("grant_type", "refresh_token"),
-                new BasicNameValuePair("refresh_token", refreshToken),
-                new BasicNameValuePair("client_id", clientId)
-        );
+		HttpPost post = new HttpPost(getTokenEndpoint());
+		List<NameValuePair> params = asList(new BasicNameValuePair("grant_type", "refresh_token"),
+				new BasicNameValuePair("refresh_token", refreshToken),
+				new BasicNameValuePair("client_id", clientId)
+		);
 
-        post.setEntity(new UrlEncodedFormEntity(params));
+		post.setEntity(new UrlEncodedFormEntity(params));
 
-        try(CloseableHttpClient httpclient = HttpClients.createDefault()){
-            return httpclient.execute(post, response -> {
-                ObjectMapper mapper = new ObjectMapper();
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    return mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: " + status);
-                }
-            });
-        }
-    }
+		try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+			return httpclient.execute(post, response -> {
+				ObjectMapper mapper = new ObjectMapper();
+				int status = response.getStatusLine().getStatusCode();
+				if (status >= 200 && status < 300) {
+					return mapper.readValue(response.getEntity().getContent(), TokenCollection.class);
+				} else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
+				}
+			});
+		}
+	}
 
 
-    @Data
-    public static final class TokenCollection {
+	@Data
+	public static final class TokenCollection {
 
-        @JsonProperty("access_token")
-        String accessToken;
+		@JsonProperty("access_token")
+		String accessToken;
 
-        @JsonProperty("expires_in")
-        Integer expiresIn;
+		@JsonProperty("expires_in")
+		Integer expiresIn;
 
-        @JsonProperty("not-before-policy")
-        Integer notBeforePolicy;
+		@JsonProperty("not-before-policy")
+		Integer notBeforePolicy;
 
-        @JsonProperty("refresh_expires_in")
-        Integer refreshExpiresIn;
+		@JsonProperty("refresh_expires_in")
+		Integer refreshExpiresIn;
 
-        @JsonProperty("refresh_token")
-        String refreshToken;
+		@JsonProperty("refresh_token")
+		String refreshToken;
 
-        @JsonProperty("token_type")
-        String tokenType;
+		@JsonProperty("token_type")
+		String tokenType;
 
-        @JsonProperty("id_token")
-        String idToken;
+		@JsonProperty("id_token")
+		String idToken;
 
-        @JsonProperty("session_state")
-        String sessionState;
+		@JsonProperty("session_state")
+		String sessionState;
 
-        @JsonProperty("scope")
-        String scope;
-    }
+		@JsonProperty("scope")
+		String scope;
+	}
 }
