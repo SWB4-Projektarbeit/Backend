@@ -12,6 +12,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -27,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @Configuration
+@EnableWebSecurity
 @EnableAspectJAutoProxy
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -40,18 +42,19 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-				.authorizeHttpRequests(auth ->
-						auth.requestMatchers("/api-timesy/login").authenticated()
-								.anyRequest().permitAll()
+				.authorizeHttpRequests(auth -> auth
+						.anyRequest().permitAll()
 				)
-				.oauth2Login(Customizer.withDefaults()) // Enables OAuth2 login
+				.oauth2Login(login -> login
+						.loginPage("/api-timesy/login"))  // Enables OAuth2 login
+				.oauth2Client(Customizer.withDefaults()) // Enables OAuth2 client
 				.logout(logout -> logout
 						.logoutUrl("/api-timesy/logout")
+						.logoutSuccessUrl("/api-timesy")
 						.addLogoutHandler(keycloakLogoutHandler)
 						.invalidateHttpSession(true)
 						.clearAuthentication(true)
 						.deleteCookies("JSESSIONID"))
-				.oauth2Client(Customizer.withDefaults()) // Enables OAuth2 client
 				.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for APIs
 				.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable CORS
 

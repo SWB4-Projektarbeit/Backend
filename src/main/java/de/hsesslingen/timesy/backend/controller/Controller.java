@@ -3,9 +3,8 @@ package de.hsesslingen.timesy.backend.controller;
 import de.hsesslingen.timesy.backend.service.FrontendService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Component
 @RestController
 @RequiredArgsConstructor
@@ -20,24 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class Controller {
 
 	private final @NonNull FrontendService frontendService;
-	@Value("${heonline.keycloak.url}")
-	private String keycloakUrl;
 
 	@CrossOrigin
-	@GetMapping("/login")
-	public @NonNull ResponseEntity<?> login(
-			@AuthenticationPrincipal final @Nullable OidcUser user,
-			@RequestParam(required = false, name = "redirect_uri") final @Nullable String redirectUri) {
+	@RequestMapping({"", "/"})
+	public @NonNull ResponseEntity<?> index(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("TimeSy Backend", HttpStatus.OK);
 		}
-		if (redirectUri != null) {
-			return ResponseEntity
-					.status(HttpStatus.FOUND)
-					.header(HttpHeaders.LOCATION, redirectUri)
-					.body("Logged in");
-		}
-		return new ResponseEntity<>("Logged in", HttpStatus.OK);
+		return new ResponseEntity<>("Authenticated as '" + user.getUserInfo().getFullName() + "'", HttpStatus.OK);
 	}
 
 	@CrossOrigin
@@ -52,7 +42,7 @@ public class Controller {
 			@RequestParam(required = false) final @Nullable String courseName,
 			@RequestParam(required = false) final @Nullable String roomType) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 		return this.frontendService.getAllRooms(
 				building, floor, roomUid, roomName, courseUid, courseName, roomType
@@ -67,7 +57,7 @@ public class Controller {
 			@PathVariable("room_uid") final int roomUid,
 			@RequestBody final int templateUid) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.updateRoom(roomUid, templateUid);
@@ -77,7 +67,7 @@ public class Controller {
 	@GetMapping("/templates")
 	public @NonNull ResponseEntity<?> getAllTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.getAllTemplates();
@@ -87,7 +77,7 @@ public class Controller {
 	@GetMapping("/templates/update")
 	public @NonNull ResponseEntity<?> updateTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.updateTemplates();
@@ -105,7 +95,7 @@ public class Controller {
 			@AuthenticationPrincipal final @Nullable OidcUser user,
 			@RequestParam(required = false) final @Nullable Integer roomUid) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.updateDisplay(roomUid);
@@ -115,7 +105,7 @@ public class Controller {
 	@GetMapping("/dummydata")
 	public @NonNull ResponseEntity<?> createDummyData(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Not a valid user", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.createDummyData();

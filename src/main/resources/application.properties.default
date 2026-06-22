@@ -1,5 +1,6 @@
 # might need to be adjusted later down the road
 server.port=8215
+spring.web.error.path=/error
 
 # spring.datasource.url=jdbc:postgresql://localhost:5432/TimeSy
 # spring.datasource.username=TimeSy
