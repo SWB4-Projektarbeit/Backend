@@ -35,7 +35,7 @@ public class LoginController {
 
 	@CrossOrigin
 	@RequestMapping(value = {"", "/"})
-	public ResponseEntity<?> postLogin(@AuthenticationPrincipal final @Nullable OidcUser user) {
+	public ResponseEntity<?> index(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		try {
 			if (this.redirectUri != null) {
 				return ResponseEntity
