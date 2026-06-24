@@ -43,7 +43,7 @@ function render(data) {
         list.appendChild(el);
     });
 
-    console.log("schedule rendered");
+    console.log("template rendered");
 }
 
 function generateQR(url) {

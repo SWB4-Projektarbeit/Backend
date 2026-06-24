@@ -13,7 +13,6 @@ public class TimeSyErrorController implements ErrorController {
 
 	@RequestMapping("/error")
 	public ResponseEntity<?> handleError() {
-		//do something like logging
 		return new ResponseEntity<>(Map.of("message", "This page does not exist"), HttpStatus.NOT_FOUND);
 	}
 }

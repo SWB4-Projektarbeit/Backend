@@ -45,9 +45,9 @@ public class HEOnlineService {
 						   @Value("${heonline.keycloak.client-id}") final @NonNull String keycloakClientID,
 						   @Value("${heonline.keycloak.client-secret}") final @NonNull String keycloakClientSecret) {
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
-		//Utils.validateUrl(heOnlineUrl + "/" + courseEndpoint.replace("{id}", "2"), "CourseEndpoint");
-		//Utils.validateUrl(heOnlineUrl + "/" + coursesEndpoint, "CoursesEndpoint");
-		//Utils.validateUrl(heOnlineUrl + "/" + appointmentsEndpoint, "AppointmentsEndpoint");
+		Utils.validateUrl(heOnlineUrl + "/" + courseEndpoint.replace("{id}", "2"), "CourseEndpoint");
+		Utils.validateUrl(heOnlineUrl + "/" + coursesEndpoint, "CoursesEndpoint");
+		Utils.validateUrl(heOnlineUrl + "/" + appointmentsEndpoint, "AppointmentsEndpoint");
 		Utils.validateUrl(keycloakUrl, "Keycloak");
 		this.heOnlineUrl = heOnlineUrl;
 		this.courseEndpoint = courseEndpoint;

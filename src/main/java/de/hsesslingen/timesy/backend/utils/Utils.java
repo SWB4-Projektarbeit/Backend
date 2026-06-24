@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class Utils {
 
-	private static final @NonNull Pattern URL_PATTERN = Pattern.compile("^(https?://)?([.\\w])*(:\\d+)?$");
+	private static final @NonNull Pattern URL_PATTERN = Pattern.compile("^(https?://)?([.\\w_-])*(:\\d+)?([/\\w_-])*(\\?[=&\\w_-]*)?$");
 
 	public void validateUrl(final @NonNull String url, final @NonNull String urlName) {
 		final @NonNull String strippedUrl = url.strip();

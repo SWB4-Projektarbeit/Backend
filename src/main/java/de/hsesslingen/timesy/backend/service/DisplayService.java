@@ -1,9 +1,6 @@
 package de.hsesslingen.timesy.backend.service;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.ConsoleMessage;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.*;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NonNull;
@@ -18,6 +15,7 @@ import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -44,26 +42,28 @@ public class DisplayService {
 
 	public byte[] capturePng(final @NonNull Path path, final int roomUid, final @Nullable Path imagePath) {
 		try (final @NonNull Playwright playwright = Playwright.create();
-			 final @NonNull Browser browser = playwright.chromium().launch()) {
-			final @NonNull Page page = browser.newPage();
-			page.setViewportSize(1200, 1600);
-			page.navigate("file://"
-					.concat(
-							path.resolve("index.html")
-									.toAbsolutePath()
-									.normalize()
-									.toString())
-					.replace("\\", "/")
-					.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid));
+			 final @NonNull Browser browser = playwright.chromium().launch(
+					 new BrowserType.LaunchOptions().setArgs(List.of("--disable-web-security")))
+		) {
+			final @NonNull Page page = browser.newPage(
+					new Browser.NewPageOptions().setViewportSize(1200, 1600)
+			);
+			@NonNull ConsoleMessage msg = page.waitForConsoleMessage(() -> page
+					.navigate("file://"
+							.concat(
+									path.resolve("index.html")
+											.toAbsolutePath()
+											.normalize()
+											.toString())
+							.replace("\\", "/")
+							.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid)));
+			while (!msg.text().equals("template rendered")) {
+				msg = page.waitForConsoleMessage(() -> {
+				});
+			}
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
-			}
-			@NonNull ConsoleMessage msg = page.waitForConsoleMessage(() -> {
-			});
-			while (!msg.text().equals("schedule rendered")) {
-				msg = page.waitForConsoleMessage(() -> {
-				});
 			}
 			return page.screenshot(screenshotOptions);
 		}

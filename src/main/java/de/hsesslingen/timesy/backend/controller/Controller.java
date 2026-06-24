@@ -36,15 +36,15 @@ public class Controller {
 	@GetMapping("/rooms")
 	public @NonNull ResponseEntity<?> getAllRooms(
 			@AuthenticationPrincipal final @Nullable OidcUser user,
-			@RequestParam(required = false) final @Nullable String building,
-			@RequestParam(required = false) final @Nullable String floor,
-			@RequestParam(required = false) final @Nullable Integer roomUid,
-			@RequestParam(required = false) final @Nullable String roomName,
-			@RequestParam(required = false) final @Nullable Integer courseUid,
-			@RequestParam(required = false) final @Nullable String courseName,
-			@RequestParam(required = false) final @Nullable String roomType) {
+			@RequestParam(required = false, name = "building") final @Nullable String building,
+			@RequestParam(required = false, name = "floor") final @Nullable String floor,
+			@RequestParam(required = false, name = "room_uid") final @Nullable Integer roomUid,
+			@RequestParam(required = false, name = "room_name") final @Nullable String roomName,
+			@RequestParam(required = false, name = "course_uid") final @Nullable Integer courseUid,
+			@RequestParam(required = false, name = "course_name") final @Nullable String courseName,
+			@RequestParam(required = false, name = "room_type") final @Nullable String roomType) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 		return this.frontendService.getAllRooms(
 				building, floor, roomUid, roomName, courseUid, courseName, roomType
@@ -95,8 +95,8 @@ public class Controller {
 	@GetMapping("/display/update")
 	public @NonNull ResponseEntity<?> updateDisplay(
 			@AuthenticationPrincipal final @Nullable OidcUser user,
-			@RequestParam(required = false) final @Nullable Integer roomUid,
-			@RequestParam(required = false) final @Nullable String imagePath) {
+			@RequestParam(required = false, name = "room_uid") final @Nullable Integer roomUid,
+			@RequestParam(required = false, name = "image_path") final @Nullable String imagePath) {
 		if (user == null) {
 			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
