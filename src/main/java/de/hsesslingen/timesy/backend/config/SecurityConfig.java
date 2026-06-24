@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableAspectJAutoProxy
@@ -56,7 +58,7 @@ public class SecurityConfig {
 						.clearAuthentication(true)
 						.deleteCookies("JSESSIONID"))
 				.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for APIs
-				.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable CORS
+				.cors(AbstractHttpConfigurer::disable); // Enable CORS
 
 		return http.build();
 	}
@@ -97,7 +99,7 @@ public class SecurityConfig {
 
 			ResponseEntity<?> logoutResponse = restTemplate.getForEntity(builder.toUriString(), String.class);
 			if (!logoutResponse.getStatusCode().is2xxSuccessful()) {
-				System.out.println("Could not propagate logout to Keycloak");
+				log.warn("Could not propagate logout to Keycloak with status code: '{}'", logoutResponse.getStatusCode());
 			}
 		}
 	}

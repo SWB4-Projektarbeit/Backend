@@ -17,6 +17,7 @@ import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -45,6 +46,7 @@ public class DisplayService {
 		try (final @NonNull Playwright playwright = Playwright.create();
 			 final @NonNull Browser browser = playwright.chromium().launch()) {
 			final @NonNull Page page = browser.newPage();
+			page.setViewportSize(1200, 1600);
 			page.navigate("file://"
 					.concat(
 							path.resolve("index.html")
@@ -53,11 +55,14 @@ public class DisplayService {
 									.toString())
 					.replace("\\", "/")
 					.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid));
+			TimeUnit.SECONDS.sleep(1);
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
 			}
 			return page.screenshot(screenshotOptions);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -79,22 +84,37 @@ public class DisplayService {
 	}
 
 	public void sendImage(final @NonNull Display display, final @NonNull Path path) {
-		this.sendImage(display, path, 2);
+		this.sendImage(display, path, null, 2, false);
 	}
 
-	public void sendImage(final @NonNull Display display, final @NonNull Path path, final int slot) {
+	public void sendImage(final @NonNull Display display, final @NonNull Path path, final @Nullable String imageName) {
+		this.sendImage(display, path, imageName, 2, true);
+	}
+
+	public void sendImage(final @NonNull Display display, final @NonNull Path path, final @Nullable String imageName, final int slot, final boolean ignoreLocationDTO) {
 		if (2 > slot || 100 < slot) {
 			log.warn("The slot for the display has to be between 2 and 100, aborting.");
 			return;
 		}
-		final @Nullable String locationDTO = this.getLocationDTO(display.getDisplayUid());
-		if (null == locationDTO) {
-			log.warn("The locationDTO for '{}' could not be obtained, aborting.", display.getDisplayUid());
-			return;
+		final @Nullable String locationDTO;
+		if (!ignoreLocationDTO) {
+			locationDTO = this.getLocationDTO(display.getDisplayUid());
+			if (null == locationDTO) {
+				log.warn("The locationDTO for '{}' could not be obtained, aborting.", display.getDisplayUid());
+				return;
+			}
+		} else {
+			locationDTO = null;
+		}
+		final @Nullable Path imagePath;
+		if (imageName != null) {
+			imagePath = path.resolve(imageName);
+		} else {
+			imagePath = null;
 		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.post()
 				.uri(this.imageEndpoint, display.getDisplayUid(), slot)
-				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid())))
+				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid(), imagePath)))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -110,6 +130,6 @@ public class DisplayService {
 		}
 	}
 
-	public record ImagePostBody(String dto, byte[] images) {
+	public record ImagePostBody(@Nullable String dto, byte[] images) {
 	}
 }

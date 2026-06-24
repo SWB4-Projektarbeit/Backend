@@ -15,9 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,13 +44,13 @@ public class FrontendService {
 	}
 
 	public @NonNull ResponseEntity<?> getAllRooms(
-			@RequestParam(required = false) final @Nullable String building,
-			@RequestParam(required = false) final @Nullable String floor,
-			@RequestParam(required = false) final @Nullable Integer roomUid,
-			@RequestParam(required = false) final @Nullable String roomName,
-			@RequestParam(required = false) final @Nullable Integer courseUid,
-			@RequestParam(required = false) final @Nullable String courseName,
-			@RequestParam(required = false) final @Nullable String roomType) {
+			final @Nullable String building,
+			final @Nullable String floor,
+			final @Nullable Integer roomUid,
+			final @Nullable String roomName,
+			final @Nullable Integer courseUid,
+			final @Nullable String courseName,
+			final @Nullable String roomType) {
 		if (null != roomUid && null != roomName) {
 			return new ResponseEntity<>("ROOM_UID and ROOM_NAME are mutually exclusive", HttpStatus.BAD_REQUEST);
 		}
@@ -89,8 +86,8 @@ public class FrontendService {
 	}
 
 	public @NonNull ResponseEntity<?> updateRoom(
-			@PathVariable("room_uid") final int roomUid,
-			@RequestBody final int templateUid) {
+			final int roomUid,
+			final int templateUid) {
 		final @Nullable List<Display> displayData = this.displayRepository.findByRoomUid(roomUid);
 		if (displayData == null || displayData.isEmpty()) {
 			return new ResponseEntity<>("No display found for '" + roomUid + "'", HttpStatus.NOT_FOUND);
@@ -119,7 +116,7 @@ public class FrontendService {
 		return this.getAllTemplates();
 	}
 
-	public @NonNull ResponseEntity<?> getTemplateData(@PathVariable("room_uid") final int roomUid) {
+	public @NonNull ResponseEntity<?> getTemplateData(final int roomUid) {
 		final @Nullable TemplateDataDTO templateData = this.templateDataMapper.getTemplateDataDTO(roomUid);
 		if (null == templateData) {
 			return new ResponseEntity<>("Error while getting TemplateData for room '" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -128,7 +125,8 @@ public class FrontendService {
 	}
 
 	public @NonNull ResponseEntity<?> updateDisplay(
-			@RequestParam(required = false) final @Nullable Integer roomUid) {
+			final @Nullable Integer roomUid,
+			final @Nullable String folder) {
 		if (null == roomUid) {
 			this.updateService.updateDisplays();
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -145,7 +143,7 @@ public class FrontendService {
 			return new ResponseEntity<>("No valid template found for the display at room'" + roomUid + "'", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		this.displayService.sendImage(display, templateData.get().templatePath());
+		this.displayService.sendImage(display, templateData.get().templatePath(), folder);
 		return new ResponseEntity<>(display, HttpStatus.OK);
 	}
 

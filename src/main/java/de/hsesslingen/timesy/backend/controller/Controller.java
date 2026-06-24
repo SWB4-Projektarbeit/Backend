@@ -93,12 +93,13 @@ public class Controller {
 	@GetMapping("/display/update")
 	public @NonNull ResponseEntity<?> updateDisplay(
 			@AuthenticationPrincipal final @Nullable OidcUser user,
-			@RequestParam(required = false) final @Nullable Integer roomUid) {
+			@RequestParam(required = false) final @Nullable Integer roomUid,
+			@RequestParam(required = false) final @Nullable String folder) {
 		if (user == null) {
 			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
 		}
 
-		return this.frontendService.updateDisplay(roomUid);
+		return this.frontendService.updateDisplay(roomUid, folder);
 	}
 
 	@CrossOrigin
