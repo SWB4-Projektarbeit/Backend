@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 @RestController
@@ -25,9 +27,9 @@ public class Controller {
 	@RequestMapping({"", "/"})
 	public @NonNull ResponseEntity<?> index(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("TimeSy Backend", HttpStatus.OK);
+			return new ResponseEntity<>(Map.of("message", "TimeSy Backend"), HttpStatus.OK);
 		}
-		return new ResponseEntity<>("Authenticated as '" + user.getUserInfo().getFullName() + "'", HttpStatus.OK);
+		return new ResponseEntity<>(Map.of("message", "Authenticated as '" + user.getUserInfo().getFullName() + "'"), HttpStatus.OK);
 	}
 
 	@CrossOrigin
@@ -57,7 +59,7 @@ public class Controller {
 			@PathVariable("room_uid") final int roomUid,
 			@RequestBody final int templateUid) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.updateRoom(roomUid, templateUid);
@@ -67,7 +69,7 @@ public class Controller {
 	@GetMapping("/templates")
 	public @NonNull ResponseEntity<?> getAllTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.getAllTemplates();
@@ -77,7 +79,7 @@ public class Controller {
 	@GetMapping("/templates/update")
 	public @NonNull ResponseEntity<?> updateTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.updateTemplates();
@@ -94,19 +96,19 @@ public class Controller {
 	public @NonNull ResponseEntity<?> updateDisplay(
 			@AuthenticationPrincipal final @Nullable OidcUser user,
 			@RequestParam(required = false) final @Nullable Integer roomUid,
-			@RequestParam(required = false) final @Nullable String folder) {
+			@RequestParam(required = false) final @Nullable String imagePath) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 
-		return this.frontendService.updateDisplay(roomUid, folder);
+		return this.frontendService.updateDisplay(roomUid, imagePath);
 	}
 
 	@CrossOrigin
 	@GetMapping("/dummydata")
 	public @NonNull ResponseEntity<?> createDummyData(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		if (user == null) {
-			return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(Map.of("message", "Unauthorized"), HttpStatus.UNAUTHORIZED);
 		}
 
 		return this.frontendService.createDummyData();

@@ -1,6 +1,7 @@
 package de.hsesslingen.timesy.backend.service;
 
 import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.ConsoleMessage;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
 import de.hsesslingen.timesy.backend.model.Display;
@@ -17,7 +18,6 @@ import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -55,14 +55,17 @@ public class DisplayService {
 									.toString())
 					.replace("\\", "/")
 					.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid));
-			TimeUnit.SECONDS.sleep(1);
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
 			}
+			@NonNull ConsoleMessage msg = page.waitForConsoleMessage(() -> {
+			});
+			while (!msg.text().equals("schedule rendered")) {
+				msg = page.waitForConsoleMessage(() -> {
+				});
+			}
 			return page.screenshot(screenshotOptions);
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
 		}
 	}
 

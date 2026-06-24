@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 @RestController
@@ -44,9 +46,9 @@ public class LoginController {
 						.build();
 			}
 			if (user == null) {
-				return new ResponseEntity<>("TimeSy Backend", HttpStatus.OK);
+				return new ResponseEntity<>(Map.of("message", "TimeSy Backend"), HttpStatus.OK);
 			}
-			return new ResponseEntity<>("Authenticated as '" + user.getUserInfo().getFullName() + "'", HttpStatus.OK);
+			return new ResponseEntity<>(Map.of("message", "Authenticated as '" + user.getUserInfo().getFullName() + "'"), HttpStatus.OK);
 		} finally {
 			this.redirectUri = null;
 		}

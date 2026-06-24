@@ -58,7 +58,7 @@ public class SecurityConfig {
 						.clearAuthentication(true)
 						.deleteCookies("JSESSIONID"))
 				.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF for APIs
-				.cors(AbstractHttpConfigurer::disable); // Enable CORS
+				.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable CORS
 
 		return http.build();
 	}
