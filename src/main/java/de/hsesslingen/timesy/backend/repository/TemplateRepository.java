@@ -28,14 +28,17 @@ public class TemplateRepository {
 
 	public void readTemplates() {
 		try {
+			// Store which templates do not exist anymore and need to be removed
 			final @NonNull Set<Integer> toRemove = new HashSet<>(this.templates.keySet());
 			final @NonNull List<File> templateFolders = BaseFileUtils.listFolders(new File(this.templatesFolder));
 			for (final @NonNull File templateFolder : templateFolders) {
+				// check if the folder contains files
 				final @Nullable File[] templateFiles = templateFolder.listFiles();
 				if (null == templateFiles || templateFiles.length == 0) {
 					log.info("The folder '{}' was empty and thus skipped.", templateFolder.getName());
 					continue;
 				}
+				// check if metadata.json exists
 				final @Nullable File metaDataFile = Arrays.stream(templateFiles).filter(
 						templateFile -> null != templateFile && templateFile.getName().equals("metadata.json")
 				).findFirst().orElse(null);
@@ -44,11 +47,13 @@ public class TemplateRepository {
 					continue;
 				}
 
+				// check if index.html exists
 				if (Arrays.stream(templateFiles).noneMatch(templateFile -> null != templateFile && templateFile.getName().equals("index.html"))) {
 					log.info("No index.html was found in '{}', skipping...", templateFolder.getName());
 					continue;
 				}
 
+				// check whether metadata.json contains the needed keys
 				final @NonNull JsonFile metaData = JsonFileManager.jsonFile(metaDataFile).create();
 				if (!metaData.hasKey("template_uid")) {
 					log.info("metadata.json in '{}' is missing 'template_uid', skipping...", templateFolder.getName());
@@ -58,6 +63,7 @@ public class TemplateRepository {
 					log.info("metadata.json in '{}' is missing 'template_name', skipping...", templateFolder.getName());
 					continue;
 				}
+
 				final int templateUid = metaData.getInt("template_uid");
 				this.templates.put(
 						templateUid,
@@ -66,6 +72,7 @@ public class TemplateRepository {
 								metaData.getString("template_name"),
 								templateFolder.toPath().toAbsolutePath().normalize()
 						));
+				// remove from the toRemove set since this template still exists
 				toRemove.remove(templateUid);
 			}
 			toRemove.forEach(this.templates::remove);

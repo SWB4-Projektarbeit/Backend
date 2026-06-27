@@ -45,10 +45,12 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
 				.authorizeHttpRequests(auth -> auth
+						// permit for all requests so auth can be handled in the endpoints
 						.anyRequest().permitAll()
 				)
 				.oauth2Login(login -> login
-						.loginPage("/api-timesy/login"))  // Enables OAuth2 login
+						// custom login page
+						.loginPage("/api-timesy/login"))
 				.oauth2Client(Customizer.withDefaults()) // Enables OAuth2 client
 				.logout(logout -> logout
 						.logoutUrl("/api-timesy/logout")

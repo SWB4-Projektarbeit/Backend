@@ -17,6 +17,7 @@ Templates need to have an `index.html` and a `metadata.json` which needs to cont
   "template_name": <name>
 }
 ```
+Once a template finished rendering, it should log `template rendered` to the console to let the backend know, the screenshot can be taken.
 
 ## Endpoints:
 - main url: ```/api-timesy```

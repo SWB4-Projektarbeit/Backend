@@ -23,6 +23,11 @@ public class Controller {
 
 	private final @NonNull FrontendService frontendService;
 
+	/**
+	 * Just a generic "landing page" so it exists
+	 *
+	 * @param user the authenticated user or null if not authenticated
+	 */
 	@CrossOrigin
 	@RequestMapping({"", "/"})
 	public @NonNull ResponseEntity<?> index(@AuthenticationPrincipal final @Nullable OidcUser user) {
@@ -32,6 +37,20 @@ public class Controller {
 		return new ResponseEntity<>(Map.of("message", "Authenticated as '" + user.getUserInfo().getFullName() + "'"), HttpStatus.OK);
 	}
 
+	/**
+	 * Get all rooms the given filters apply to
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 * @param building the name of the building to be filtered on
+	 * @param floor the name of the floor to be filtered on
+	 * @param roomUid the uid of the room to be filtered on
+	 * @param roomName the name of the room to be filtered on (mutually exclusive with roomUid)
+	 * @param courseUid the uid of the course to be filtered on
+	 * @param courseName the name of the course to be filtered on (mutually exclusive with courseUid)
+	 * @param roomType the type of the room to be filtered on
+	 *
+	 * @return a list of rooms matching the given filters if authenticated, else a 401
+	 */
 	@CrossOrigin
 	@GetMapping("/rooms")
 	public @NonNull ResponseEntity<?> getAllRooms(
@@ -51,7 +70,16 @@ public class Controller {
 		);
 	}
 
-
+	/**
+	 * Update the template of a room
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 * @param roomUid the uid of the room to be updated
+	 * @param templateUid the uid of the template to be used for the room
+	 *
+	 * @return 200 if successful, 404 if the room was not found, 500 if an internal server error occurred,
+	 * or 401 if not authenticated
+	 */
 	@CrossOrigin
 	@PatchMapping("/rooms/{room_uid}")
 	public @NonNull ResponseEntity<?> updateRoom(
@@ -65,6 +93,13 @@ public class Controller {
 		return this.frontendService.updateRoom(roomUid, templateUid);
 	}
 
+	/**
+	 * Get all templates
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 *
+	 * @return all templates, or 404 if none were found, or 401 if not authenticated
+	 */
 	@CrossOrigin
 	@GetMapping("/templates")
 	public @NonNull ResponseEntity<?> getAllTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
@@ -75,6 +110,13 @@ public class Controller {
 		return this.frontendService.getAllTemplates();
 	}
 
+	/**
+	 * Re-read all templates from the filesystem
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 *
+	 * @return all templates, or 404 if none were found, or 401 if not authenticated
+	 */
 	@CrossOrigin
 	@GetMapping("/templates/update")
 	public @NonNull ResponseEntity<?> updateTemplates(@AuthenticationPrincipal final @Nullable OidcUser user) {
@@ -85,12 +127,28 @@ public class Controller {
 		return this.frontendService.updateTemplates();
 	}
 
+	/**
+	 * Get the data to render the template for a given room
+	 *
+	 * @param roomUid the uid of the room
+	 *
+	 * @return the data for the template, 500 if an internal error occurred or 401 if not authenticated
+	 */
 	@CrossOrigin
 	@GetMapping("/templates/data/{room_uid}")
 	public @NonNull ResponseEntity<?> getTemplateData(@PathVariable("room_uid") final int roomUid) {
 		return this.frontendService.getTemplateData(roomUid);
 	}
 
+	/**
+	 * Update the display of all rooms or a single room
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 * @param roomUid the uid of the room to be updated, or null to update all rooms
+	 * @param imagePath the path where the screenshot should be exported to, or null to not export a screenshot
+	 *
+	 * @return the display dto, 500 if an internal error occurred, 404 if no display could be found, 200 if all displays were updated or 401 if not authenticated
+	 */
 	@CrossOrigin
 	@GetMapping("/display/update")
 	public @NonNull ResponseEntity<?> updateDisplay(
@@ -104,6 +162,13 @@ public class Controller {
 		return this.frontendService.updateDisplay(roomUid, imagePath);
 	}
 
+	/**
+	 * Debug endpoint to create dummy data in the database
+	 *
+	 * @param user the authenticated user, or null if not authenticated
+	 *
+	 * @return information of /rooms
+	 */
 	@CrossOrigin
 	@GetMapping("/dummydata")
 	public @NonNull ResponseEntity<?> createDummyData(@AuthenticationPrincipal final @Nullable OidcUser user) {

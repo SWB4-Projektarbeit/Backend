@@ -25,6 +25,14 @@ public class LoginController {
 
 	private @Nullable String redirectUri;
 
+	/**
+	 * Login endpoint
+	 * If redirect_uri is given, it is saved so a redirect can happen after a successful login
+	 *
+	 * @param redirectUri the uri to be redirected to
+	 *
+	 * @return redirect to the actual auth page
+	 */
 	@CrossOrigin
 	@RequestMapping("/api-timesy/login")
 	public @NonNull ResponseEntity<?> auth(@RequestParam(required = false, name = "redirect_uri") final @Nullable String redirectUri) {
@@ -35,18 +43,25 @@ public class LoginController {
 				.build();
 	}
 
+	/**
+	 * Index for the backend, redirects if a redirect_uri was saved by a previous login request and the user is authenticated
+	 *
+	 * @param user the authenticated user or null if not authenticated
+	 *
+	 * @return redirect if the user is authenticated and a redirect_uri was saved, else a 200
+	 */
 	@CrossOrigin
 	@RequestMapping(value = {"", "/"})
 	public ResponseEntity<?> index(@AuthenticationPrincipal final @Nullable OidcUser user) {
 		try {
+			if (user == null) {
+				return new ResponseEntity<>(Map.of("message", "TimeSy Backend"), HttpStatus.OK);
+			}
 			if (this.redirectUri != null) {
 				return ResponseEntity
 						.status(HttpStatus.FOUND)
 						.header(HttpHeaders.LOCATION, this.redirectUri)
 						.build();
-			}
-			if (user == null) {
-				return new ResponseEntity<>(Map.of("message", "TimeSy Backend"), HttpStatus.OK);
 			}
 			return new ResponseEntity<>(Map.of("message", "Authenticated as '" + user.getUserInfo().getFullName() + "'"), HttpStatus.OK);
 		} finally {
