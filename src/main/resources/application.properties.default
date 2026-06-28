@@ -1,0 +1,55 @@
+# might need to be adjusted later down the road
+server.port=8215
+spring.web.error.path=/error
+
+# spring.datasource.url=jdbc:postgresql://localhost:5432/TimeSy
+# spring.datasource.username=TimeSy
+# spring.datasource.password=TimeSy
+# spring.datasource.driver-class-name=org.postgresql.Driver # Spring Boot can infer this from the URL
+# spring.jpa.show-sql=true
+
+# add your folder for templates, example templates are in test/resources/templates, so add the path to that folder here
+templates.folder=""
+frontend.url=""
+displayserver.url=127.0.0.1:8082
+displayserver.location-dto-endpoint=/api/location/{id}
+displayserver.image-endpoint="/api/location/{id}/mem_combo/{slot}"
+heonline.url=http://127.0.0.1:8081
+heonline.appointments-endpoint=he/co/co-tm-core/course/api/appointments
+heonline.courses-endpoint=he/co/co-tm-core/course/api/courses?limit=10000
+# the placeholder for the course id is {id}
+heonline.course-endpoint=he/co/co-tm-core/course/api/courses/{id}
+
+
+# whether the backend should automatically populate the DB with some dummy data
+dummydata=true
+
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+# spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.PostgreSQLDialect
+# Hibernate ddl auto (create, create-drop, validate, update)
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=password
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# Keycloak HE-Online
+# <url>/auth
+heonline.keycloak.url=http://127.0.0.1:8080
+heonline.keycloak.realm=swt-projekt
+heonline.keycloak.client-id=swt-project-bff
+heonline.keycloak.client-secret=""
+
+# Keycloak to protect the backend with
+# provide the proper client-name
+spring.security.oauth2.client.registration.swt-project-bff.provider=keycloak-local
+spring.security.oauth2.client.registration.swt-project-bff.client-id=swt-project-bff
+spring.security.oauth2.client.registration.swt-project-bff.client-secret=""
+spring.security.oauth2.client.registration.swt-project-bff.authorization-grant-type=authorization_code
+spring.security.oauth2.client.registration.swt-project-bff.scope=openid,profile
+spring.security.oauth2.client.registration.swt-project-bff.redirect-uri={baseUrl}/login/oauth2/code/swt-project-bff
+spring.security.oauth2.client.registration.swt-project-bff.client-name="SWT-Projekt BFF"
+spring.security.oauth2.client.registration.swt-project-bff.client-authentication-method=client_secret_basic
+spring.security.oauth2.client.provider.keycloak-local.issuer-uri=http://localhost:8080/realms/swt-projekt
+spring.security.oauth2.client.provider.keycloak-local.user-name-attribute=preferred_username

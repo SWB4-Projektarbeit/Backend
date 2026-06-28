@@ -1,8 +1,6 @@
 package de.hsesslingen.timesy.backend.service;
 
-import com.microsoft.playwright.Browser;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.*;
 import de.hsesslingen.timesy.backend.model.Display;
 import de.hsesslingen.timesy.backend.utils.Utils;
 import lombok.NonNull;
@@ -17,14 +15,17 @@ import org.springframework.web.client.RestClient;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.List;
 
 @Slf4j
 @Service
 public class DisplayService {
 
-	public static final @NonNull String LOCATION_DTO_ENDPOINT = "/api/location/%d";
-	public static final @NonNull String IMAGE_ENDPOINT = "/api/location/%d/mem_combo/%d";
 	private final @NonNull RestClient restClient;
+	@Value("${displayserver.location-dto-endpoint}")
+	private @NonNull String locationDtoEndpoint;
+	@Value("${displayserver.image-endpoint}")
+	private @NonNull String imageEndpoint;
 	@Value("${server.port}")
 	private int port;
 
@@ -41,15 +42,25 @@ public class DisplayService {
 
 	public byte[] capturePng(final @NonNull Path path, final int roomUid, final @Nullable Path imagePath) {
 		try (final @NonNull Playwright playwright = Playwright.create();
-			 final @NonNull Browser browser = playwright.chromium().launch()) {
-			final @NonNull Page page = browser.newPage();
-			page.navigate(path
-					.resolve("index.html")
-					.toAbsolutePath()
-					.normalize()
-					.toString()
-					.replace("\\", "/")
-					.concat("?http://localhost:" + port + "/api-timesy/templates/data/" + roomUid));
+			 final @NonNull Browser browser = playwright.chromium().launch(
+					 new BrowserType.LaunchOptions().setArgs(List.of("--disable-web-security")))
+		) {
+			final @NonNull Page page = browser.newPage(
+					new Browser.NewPageOptions().setViewportSize(1200, 1600)
+			);
+			@NonNull ConsoleMessage msg = page.waitForConsoleMessage(() -> page
+					.navigate("file://"
+							.concat(
+									path.resolve("index.html")
+											.toAbsolutePath()
+											.normalize()
+											.toString())
+							.replace("\\", "/")
+							.concat("?http://localhost:" + this.port + "/api-timesy/templates/data/" + roomUid)));
+			while (!msg.text().equals("template rendered")) {
+				msg = page.waitForConsoleMessage(() -> {
+				});
+			}
 			final @NonNull Page.ScreenshotOptions screenshotOptions = new Page.ScreenshotOptions().setFullPage(true);
 			if (null != imagePath) {
 				screenshotOptions.setPath(imagePath);
@@ -60,7 +71,7 @@ public class DisplayService {
 
 	public @Nullable String getLocationDTO(final long displayUid) {
 		final @NonNull ResponseEntity<@NotNull String> responseEntity = this.restClient.get()
-				.uri(String.format(LOCATION_DTO_ENDPOINT, displayUid))
+				.uri(this.locationDtoEndpoint, displayUid)
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve()
@@ -76,22 +87,37 @@ public class DisplayService {
 	}
 
 	public void sendImage(final @NonNull Display display, final @NonNull Path path) {
-		this.sendImage(display, path, 2);
+		this.sendImage(display, path, null, 2, false);
 	}
 
-	public void sendImage(final @NonNull Display display, final @NonNull Path path, final int slot) {
+	public void sendImage(final @NonNull Display display, final @NonNull Path path, final @Nullable String imageName) {
+		this.sendImage(display, path, imageName, 2, true);
+	}
+
+	public void sendImage(final @NonNull Display display, final @NonNull Path path, final @Nullable String imageName, final int slot, final boolean ignoreLocationDTO) {
 		if (2 > slot || 100 < slot) {
 			log.warn("The slot for the display has to be between 2 and 100, aborting.");
 			return;
 		}
-		final @Nullable String locationDTO = this.getLocationDTO(display.getDisplayUid());
-		if (null == locationDTO) {
-			log.warn("The locationDTO for '{}' could not be obtained, aborting.", display.getDisplayUid());
-			return;
+		final @Nullable String locationDTO;
+		if (!ignoreLocationDTO) {
+			locationDTO = this.getLocationDTO(display.getDisplayUid());
+			if (null == locationDTO) {
+				log.warn("The locationDTO for '{}' could not be obtained, aborting.", display.getDisplayUid());
+				return;
+			}
+		} else {
+			locationDTO = null;
+		}
+		final @Nullable Path imagePath;
+		if (imageName != null) {
+			imagePath = path.resolve(imageName);
+		} else {
+			imagePath = null;
 		}
 		final @NonNull RestClient.ResponseSpec response = this.restClient.post()
-				.uri(String.format(IMAGE_ENDPOINT, display.getDisplayUid(), slot))
-				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid())))
+				.uri(this.imageEndpoint, display.getDisplayUid(), slot)
+				.body(new ImagePostBody(locationDTO, this.capturePng(path, display.getRoomUid(), imagePath)))
 				.accept(MediaType.APPLICATION_JSON)
 				.acceptCharset(StandardCharsets.UTF_8)
 				.retrieve();
@@ -107,6 +133,6 @@ public class DisplayService {
 		}
 	}
 
-	public record ImagePostBody(String dto, byte[] images) {
+	public record ImagePostBody(@Nullable String dto, byte[] images) {
 	}
 }

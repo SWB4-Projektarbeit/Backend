@@ -1,6 +1,8 @@
 # Backend for TimeSY
 ## Compile:
-Set the templates folder in application.properties. <br>
+If on Linux, install playwright dependencies with ```npx playwright install-deps``` (you might need to install npm first). <br>
+Copy ```src/main/resources/application.properties.default``` to ```src/main/resources/application.properties```. <br>
+Set the templates folder and the keycloak secret in application.properties. <br>
 Initially run ```mvn clean verify -U``` to verify all dependencies get installed. <br>
 Then use ```mvn spring-boot:run``` to run the Backend.
 
@@ -15,6 +17,7 @@ Templates need to have an `index.html` and a `metadata.json` which needs to cont
   "template_name": <name>
 }
 ```
+Once a template finished rendering, it should log `template rendered` to the console to let the backend know, the screenshot can be taken.
 
 ## Endpoints:
 - main url: ```/api-timesy```

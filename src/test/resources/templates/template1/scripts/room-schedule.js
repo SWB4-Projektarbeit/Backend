@@ -42,6 +42,8 @@ function render(data) {
             '</div>';
         list.appendChild(el);
     });
+
+    console.log("template rendered");
 }
 
 function generateQR(url) {
