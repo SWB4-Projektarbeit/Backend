@@ -12,7 +12,7 @@ public class Utils {
 
 	public void validateUrl(final @NonNull String url, final @NonNull String urlName) {
 		final @NonNull String strippedUrl = url.strip();
-		if (strippedUrl.isEmpty() || strippedUrl.equals("\"\"")) {
+		if (strippedUrl.isEmpty() || strippedUrl.equals("\"\"") || strippedUrl.equals("<placeholder>")) {
 			throw new IllegalArgumentException("Die " + urlName + " URL darf nicht leer sein.");
 		}
 

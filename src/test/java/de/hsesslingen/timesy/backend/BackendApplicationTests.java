@@ -70,12 +70,15 @@ class BackendApplicationTests {
 						 @Value("${templates.folder}") final @NonNull String templatesFolder) {
 		System.out.println("[Tests] HeOnline URL: '" + heOnlineUrl + "'");
 		Assertions.assertNotEquals("\"\"", heOnlineUrl);
+		Assertions.assertNotEquals("<placeholder>", heOnlineUrl);
 		Utils.validateUrl(heOnlineUrl, "HeOnline");
 		System.out.println("[Tests] DisplayServer URL: '" + displayServerUrl + "'");
 		Assertions.assertNotEquals("\"\"", displayServerUrl);
+		Assertions.assertNotEquals("<placeholder>", displayServerUrl);
 		Utils.validateUrl(displayServerUrl, "DisplayServer");
 		System.out.println("[Tests] Templates folder: '" + templatesFolder + "'");
 		Assertions.assertNotEquals("\"\"", templatesFolder);
+		Assertions.assertNotEquals("<placeholder>", templatesFolder);
 		System.out.println();
 	}
 
