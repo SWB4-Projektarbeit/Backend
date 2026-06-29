@@ -9,8 +9,8 @@ spring.web.error.path=/error
 # spring.jpa.show-sql=true
 
 # add your folder for templates, example templates are in test/resources/templates, so add the path to that folder here
-templates.folder=<placeholder>
-frontend.url=<placeholder>
+templates.folder=/timesy/templates
+frontend.url=http://localhost:4200
 displayserver.url=<placeholder>
 displayserver.location-dto-endpoint=/api/location/{id}
 displayserver.image-endpoint="/api/location/{id}/mem_combo/{slot}"
